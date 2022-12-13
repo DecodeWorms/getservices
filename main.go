@@ -18,12 +18,15 @@ import (
 var db storage.Conn
 var clientStorage client.Client
 var serviceProviderStorage client.ServiceProvider
+var serviceStorage client.Service
 
 var clientServer server.ClientMigrationServer
 var serviceProviderServer server.ServiceProviderServer
+var serviceServer server.ServicesServer
 
 var clientHandler handler.ClientMigrationHandler
 var serviceProviderHandler handler.ServiceProviderHandler
+var serviceHandler handler.ServicesHandler
 
 func init() {
 
@@ -43,18 +46,24 @@ func init() {
 	db = storage.NewConn(c)
 	clientStorage = client.NewCleint(db.Client)
 	serviceProviderStorage = client.NewServeProvider(db.Client)
+	serviceStorage = client.NewServices(db.Client)
 
 	clientHandler = handler.NewCleintMigration(clientStorage)
 	serviceProviderHandler = handler.NewServiceProviderHandler(serviceProviderStorage)
+	serviceHandler = handler.NewServiceHandler(serviceStorage)
 
 	clientServer = server.NewClientMigrationServer(clientHandler)
 	serviceProviderServer = server.NewServiceProviderServer(serviceProviderHandler)
+	serviceServer = server.NewServiceServer(serviceHandler)
 
 	clientServer.Create(ctx)
 	clientServer.Address(ctx)
 
 	serviceProviderServer.Create(ctx)
 	serviceProviderServer.Address(ctx)
+
+	serviceServer.Create(ctx)
+	serviceServer.Address(ctx)
 
 }
 
