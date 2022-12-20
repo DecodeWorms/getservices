@@ -20,13 +20,13 @@ var clientStorage client.Client
 var serviceProviderStorage client.ServiceProvider
 var serviceStorage client.Service
 
-var clientServer server.ClientMigrationServer
-var serviceProviderServer server.ServiceProviderServer
-var serviceServer server.ServicesServer
-
 var clientHandler handler.ClientMigrationHandler
 var serviceProviderHandler handler.ServiceProviderHandler
 var serviceHandler handler.ServicesHandler
+
+var clientServer server.ClientMigrationServer
+var serviceProviderServer server.ServiceProviderServer
+var serviceServer server.ServicesServer
 
 func init() {
 
@@ -48,22 +48,14 @@ func init() {
 	serviceProviderStorage = client.NewServeProvider(db.Client)
 	serviceStorage = client.NewServices(db.Client)
 
-	clientHandler = handler.NewCleintMigration(clientStorage)
+	clientHandler = handler.NewCleintMigration(clientStorage, serviceStorage, serviceProviderStorage)
 	serviceProviderHandler = handler.NewServiceProviderHandler(serviceProviderStorage)
 	serviceHandler = handler.NewServiceHandler(serviceStorage)
 
 	clientServer = server.NewClientMigrationServer(clientHandler)
 	serviceProviderServer = server.NewServiceProviderServer(serviceProviderHandler)
 	serviceServer = server.NewServiceServer(serviceHandler)
-
-	clientServer.Create(ctx)
-	clientServer.Address(ctx)
-
-	serviceProviderServer.Create(ctx)
-	serviceProviderServer.Address(ctx)
-
-	serviceServer.Create(ctx)
-	serviceServer.Address(ctx)
+	clientServer.MigrateModels(ctx)
 
 }
 

@@ -17,22 +17,12 @@ func NewClientMigrationServer(cl handler.ClientMigrationHandler) ClientMigration
 
 }
 
-func (cl ClientMigrationServer) Create(ctx context.Context) {
+func (cl ClientMigrationServer) MigrateModels(ctx context.Context) {
 
-	err := cl.ClientHandler.Create(ctx)
-	if err != nil {
+	if err := cl.ClientHandler.MigrateModels(ctx); err != nil {
 		log.Printf("error %v", err)
 		return
 	}
 	log.Println(200, "success")
 
-}
-
-func (cl ClientMigrationServer) Address(ctx context.Context) {
-
-	if err := cl.ClientHandler.Address(ctx); err != nil {
-		log.Printf("error %v", err)
-		return
-	}
-	log.Println(200, "success")
 }

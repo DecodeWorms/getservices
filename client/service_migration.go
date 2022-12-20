@@ -7,6 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
+type ServiceMigrations interface {
+	Create(ctx context.Context) error
+	Address(ctx context.Context) error
+}
+
 type Service struct {
 	db *gorm.DB
 }
