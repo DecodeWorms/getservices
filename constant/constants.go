@@ -1,7 +1,7 @@
 package constant
 
 const (
-	client           = "client"
-	service_provider = "service-provider"
-	services         = "services"
+	Client           = "client"
+	Service_provider = "service-provider"
+	Services         = "services"
 )
