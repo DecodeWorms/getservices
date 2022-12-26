@@ -16,6 +16,9 @@ type ClientServices interface {
 	Update(clientId string, cl models.Client) error
 	DeactivateAccount(clientId string) error
 	ActivateAccount(email string) (models.Client, error)
+	CreateAddress(add models.Address) error
+	AddressByClientId(clientId string) (models.Address, error)
+	UpdateAddress(clientId string) (models.Address, error)
 }
 
 type ClientAccount struct {
@@ -83,4 +86,29 @@ func (client ClientAccount) DeactivateAccount(clientId string) error {
 // complete activate account later
 func (client ClientAccount) ActivateAccount(clientId string) error {
 	return nil
+}
+
+func (client ClientAccount) CreateAddress(add models.Address) error {
+	ad := models.Address{
+		AddressIdentity: add.AddressIdentity,
+		ClientId:        add.ClientId,
+		Name:            add.Name,
+		ZipCode:         add.ZipCode,
+		City:            add.City,
+	}
+	return client.db.Create(&ad).Error
+}
+
+func (client ClientAccount) AddressByClientId(clientId string) (models.Address, error) {
+	var ad models.Address
+	return ad, client.db.Where("client_id = ?", clientId).First(&ad).Error
+}
+
+func (client ClientAccount) UpdateAddress(clientId string, data models.Address) error {
+	ad := models.Address{
+		Name:    data.Name,
+		ZipCode: data.ZipCode,
+		City:    data.City,
+	}
+	return client.db.Model(&ad).Where("client_id = ?", clientId).Updates(&ad).Error
 }
