@@ -16,6 +16,9 @@ type ProviderServices interface {
 	Update(providerId string, cl models.ServiceProvider) error
 	DeactivateAccount(clientId string) error
 	ActivateAccount(email string) (models.ServiceProvider, error)
+	CreateAddress(add models.ServiceProviderAddress) error
+	AddressByProviderId(providerId string) (models.ServiceProviderAddress, error)
+	UpdateAddress(providerId string) (models.ServiceProviderAddress, error)
 }
 
 type ServiceProviderAccount struct {
@@ -83,4 +86,27 @@ func (provider ServiceProviderAccount) DeactivateAccount(providerId string) erro
 // complete activate account later
 func (provider ServiceProviderAccount) ActivateAccount(providerId string) error {
 	return nil
+}
+
+func (provider ServiceProviderAccount) CreateAddress(add models.ServiceProviderAddress) error {
+	ad := models.ServiceProviderAddress{
+		Name:    add.Name,
+		ZipCode: add.ZipCode,
+		City:    add.City,
+	}
+	return provider.db.Create(&ad).Error
+}
+
+func (provider ServiceProviderAccount) AddressByProviderId(providerId string) (models.ServiceProviderAddress, error) {
+	var ad models.ServiceProviderAddress
+	return ad, provider.db.Where("provider_id = ?", providerId).First(&ad).Error
+}
+
+func (provider ServiceProviderAccount) UpdateAddress(clientId string, data models.ServiceProviderAddress) error {
+	ad := models.Address{
+		Name:    data.Name,
+		ZipCode: data.ZipCode,
+		City:    data.City,
+	}
+	return provider.db.Model(&ad).Where("provider_id = ?", clientId).Updates(&ad).Error
 }
