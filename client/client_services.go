@@ -90,7 +90,7 @@ func (client ClientAccount) ActivateAccount(clientId string) error {
 
 func (client ClientAccount) CreateAddress(add models.Address) error {
 	ad := models.Address{
-		AddressIdentity: add.AddressIdentity,
+		AddressIdentity: add.AddressIdentity, //probably remove in the future .
 		ClientId:        add.ClientId,
 		Name:            add.Name,
 		ZipCode:         add.ZipCode,
