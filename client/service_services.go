@@ -88,9 +88,10 @@ func (client ServiceAccount) ActivateAccount(clientId string) error {
 
 func (service ServiceAccount) CreateAddress(add models.ServiceAddress) error {
 	ad := models.ServiceAddress{
-		Name:    add.Name,
-		ZipCode: add.ZipCode,
-		City:    add.City,
+		ServiceProviderId: add.ServiceProviderId,
+		Name:              add.Name,
+		ZipCode:           add.ZipCode,
+		City:              add.City,
 	}
 	return service.db.Create(&ad).Error
 }
