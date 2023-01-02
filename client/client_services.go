@@ -9,16 +9,17 @@ import (
 
 type ClientServices interface {
 	Create(cl models.Client) error
+	Login(email string) (*models.Client, error)
 	Client(clientId string) (models.Client, error)
 	Clients() ([]models.Client, error)
-	ClientByEmail(email string) (models.Client, error)
-	ClientByPhoneNumber(phoneNumber string) (models.Client, error)
+	ClientByEmail(email string) (*models.Client, error)
+	ClientByPhoneNumber(phoneNumber string) (*models.Client, error)
 	Update(clientId string, cl models.Client) error
 	DeactivateAccount(clientId string) error
-	ActivateAccount(email string) (models.Client, error)
+	ActivateAccount(email string) error
 	CreateAddress(add models.Address) error
 	AddressByClientId(clientId string) (models.Address, error)
-	UpdateAddress(clientId string) (models.Address, error)
+	UpdateAddress(clientId string, data models.Address) error
 }
 
 type ClientAccount struct {
@@ -44,7 +45,13 @@ func (client ClientAccount) Create(cl models.Client) error {
 		Email:          cl.Email,
 		Password:       cl.Password,
 	}
-	return client.db.Create(data).Error
+	return client.db.Create(&data).Error
+}
+
+func (client ClientAccount) Login(email string) (*models.Client, error) {
+	var c *models.Client
+	return c, client.db.Where("email = ?", email).First(&c).Error
+
 }
 
 func (client ClientAccount) Client(clientId string) (models.Client, error) {
@@ -57,17 +64,18 @@ func (client ClientAccount) Clients() ([]models.Client, error) {
 	return c, client.db.Find(&c).Error
 }
 
-func (client ClientAccount) ClientByEmail(email string) (models.Client, error) {
-	var c models.Client
+func (client ClientAccount) ClientByEmail(email string) (*models.Client, error) {
+	var c *models.Client
 	return c, client.db.Where("email = ?", email).First(&c).Error
 }
 
-func (client ClientAccount) ClientByPhoneNumber(phoneNumber string) (models.Client, error) {
-	var c models.Client
+func (client ClientAccount) ClientByPhoneNumber(phoneNumber string) (*models.Client, error) {
+	var c *models.Client
 	return c, client.db.Where("phone_number = ?", phoneNumber).First(&c).Error
 }
 
 func (client ClientAccount) Update(clientId string, data models.Client) error {
+	data.UpdatedAt = time.Now()
 	c := models.Client{
 		FirstName:   data.FirstName,
 		LastName:    data.LastName,
@@ -105,6 +113,7 @@ func (client ClientAccount) AddressByClientId(clientId string) (models.Address, 
 }
 
 func (client ClientAccount) UpdateAddress(clientId string, data models.Address) error {
+	data.UpdatedAt = time.Now()
 	ad := models.Address{
 		Name:    data.Name,
 		ZipCode: data.ZipCode,
