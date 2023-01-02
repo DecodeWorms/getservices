@@ -69,3 +69,29 @@ func (client ClientServer) UpdateClient() gin.HandlerFunc {
 	}
 
 }
+
+func (client ClientServer) DeactivateAccount() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		clientEmail := ctx.Query("email")
+		handlerErr := client.clienthandler.DeactivateClientAccount(ctx, clientEmail)
+		if handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, nil)
+
+	}
+}
+
+func (client ClientServer) ActivateAccount() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		clientEmail := ctx.Query("email")
+		handlerErr := client.clienthandler.ActivateAccount(ctx, clientEmail)
+		if handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, nil)
+
+	}
+}

@@ -58,6 +58,8 @@ func main() {
 	router.POST("/client", clientServ.SignUpClient())
 	router.POST("/client/login", clientServ.UserLogin())
 	router.PUT("/client", clientServ.UpdateClient())
+	router.DELETE("/client", clientServ.DeactivateAccount())
+	router.PUT("/client/reactivate", clientServ.ActivateAccount())
 
 	if err := router.Run(":080"); err != nil {
 		log.Println("error processing http server req")

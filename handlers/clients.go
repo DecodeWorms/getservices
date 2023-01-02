@@ -150,6 +150,7 @@ func (client ClientHandler) UserLogin(ctx *gin.Context, data models.ClientLoginJ
 }
 
 func (client ClientHandler) UpdateClient(ctx *gin.Context, data models.ClientJson) *errors.UserError {
+	//TODO : use user id store in the context as an arg instead of email
 	cli, err := client.ClientService.ClientByEmail(data.Email)
 	if err != nil {
 		custom := errors.ErrResourceNotFound
@@ -184,6 +185,33 @@ func (client ClientHandler) UpdateClient(ctx *gin.Context, data models.ClientJso
 
 	if err := client.ClientService.UpdateAddress(cli.ClientId, addResources); err != nil {
 		custom := errors.ErrUpdatingUserResource
+		return custom
+	}
+	return nil
+
+}
+
+func (client ClientHandler) DeactivateClientAccount(ctx *gin.Context, email string) *errors.UserError {
+	cli, err := client.ClientService.ClientByEmail(email)
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return custom
+	}
+	if err = client.ClientService.DeactivateAccount(cli.ClientId); err != nil {
+		custom := errors.ErrDeactivatingResource
+		return custom
+	}
+	return nil
+}
+
+func (client ClientHandler) ActivateAccount(ctx *gin.Context, email string) *errors.UserError {
+	cli, err := client.ClientService.GetDeletedAgentByEmail(email)
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return custom
+	}
+	if err = client.ClientService.ActivateAccount(cli.ClientId); err != nil {
+		custom := errors.ErrActivatingResource
 		return custom
 	}
 	return nil
