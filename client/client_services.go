@@ -20,6 +20,7 @@ type ClientServices interface {
 	CreateAddress(add models.Address) error
 	AddressByClientId(clientId string) (models.Address, error)
 	UpdateAddress(clientId string, data models.Address) error
+	GetDeletedAgentByEmail(email string) (*models.Client, error)
 }
 
 type ClientAccount struct {
@@ -87,13 +88,13 @@ func (client ClientAccount) Update(clientId string, data models.Client) error {
 }
 
 func (client ClientAccount) DeactivateAccount(clientId string) error {
-	var c models.Client
-	return client.db.Model(&c).Where("client_id = ?", clientId).Delete(c).Error
+	var c *models.Client
+	return client.db.Model(&c).Where("client_id = ?", clientId).Delete(&c).Error
 }
 
 // complete activate account later
 func (client ClientAccount) ActivateAccount(clientId string) error {
-	return nil
+	return client.db.Model(&models.Client{}).Unscoped().Where("client_id = ?", clientId).Update("deleted_at", nil).Error
 }
 
 func (client ClientAccount) CreateAddress(add models.Address) error {
@@ -120,4 +121,9 @@ func (client ClientAccount) UpdateAddress(clientId string, data models.Address) 
 		City:    data.City,
 	}
 	return client.db.Model(&ad).Where("client_id = ?", clientId).Updates(&ad).Error
+}
+
+func (client ClientAccount) GetDeletedAgentByEmail(email string) (*models.Client, error) {
+	var c *models.Client
+	return c, client.db.Unscoped().Where("email = ?", email).First(&c).Error
 }
