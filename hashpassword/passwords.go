@@ -24,11 +24,12 @@ func HashPasswordWithGivenCost(password []byte, cost int) (string, error) {
 
 }
 
-func ComparePasswordWithHashed(password, hashedPassword string) error {
+func ComparePasswordWithHashed(hashedPassword, password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
+	return err == nil
 
-	if err := bcrypt.CompareHashAndPassword([]byte(password), []byte(hashedPassword)); err != nil {
-		return ErrMismatchedHashAndPassword
-	}
-	return nil
+}
 
+func ComparePasswordWithConfirmPassword(password, ConfirmPassword string) bool {
+	return password == ConfirmPassword
 }
