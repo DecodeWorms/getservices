@@ -21,6 +21,7 @@ type ClientServices interface {
 	AddressByClientId(clientId string) (models.Address, error)
 	UpdateAddress(clientId string, data models.Address) error
 	GetDeletedAgentByEmail(email string) (*models.Client, error)
+	UpdatePassword(passwordData *models.Client) error
 }
 
 type ClientAccount struct {
@@ -126,4 +127,11 @@ func (client ClientAccount) UpdateAddress(clientId string, data models.Address) 
 func (client ClientAccount) GetDeletedAgentByEmail(email string) (*models.Client, error) {
 	var c *models.Client
 	return c, client.db.Unscoped().Where("email = ?", email).First(&c).Error
+}
+
+func (client ClientAccount) UpdatePassword(data *models.Client) error {
+	c := &models.Client{
+		Password: data.Password,
+	}
+	return client.db.Model(&c).Where("email = ?", data.Email).Updates(&c).Error
 }

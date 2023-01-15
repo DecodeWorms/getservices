@@ -95,3 +95,20 @@ func (client ClientServer) ActivateAccount() gin.HandlerFunc {
 
 	}
 }
+
+func (client ClientServer) UpdateClientPassword() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var passwordData models.PasswordJson
+		email := ctx.Query("email")
+		if err := ctx.ShouldBindJSON(&passwordData); err != nil {
+			errors.CustomError(pkg.CodeDataValidationError, err.Error())
+			return
+		}
+		handlerErr := client.clienthandler.UpdateClientPassword(ctx, email, passwordData)
+		if handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, nil)
+	}
+}
