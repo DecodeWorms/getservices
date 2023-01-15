@@ -9,16 +9,18 @@ import (
 
 type ProviderServices interface {
 	Create(cl models.ServiceProvider) error
+	Login(email string) (*models.ServiceProvider, error)
 	Provider(providerId string) (models.ServiceProvider, error)
 	Providers() ([]models.ServiceProvider, error)
 	ProviderByEmail(email string) (models.ServiceProvider, error)
 	ProviderByPhoneNumber(phoneNumber string) (models.ServiceProvider, error)
 	Update(providerId string, cl models.ServiceProvider) error
 	DeactivateAccount(clientId string) error
-	ActivateAccount(email string) (models.ServiceProvider, error)
+	ActivateAccount(email string) error
 	CreateAddress(add models.ServiceProviderAddress) error
 	AddressByProviderId(providerId string) (models.ServiceProviderAddress, error)
-	UpdateAddress(providerId string) (models.ServiceProviderAddress, error)
+	UpdateAddress(providerId string, data *models.ServiceProviderAddress) error
+	UpdatePassword(passwordData *models.ServiceProvider) error
 }
 
 type ServiceProviderAccount struct {
@@ -44,7 +46,13 @@ func (provider ServiceProviderAccount) Create(pr models.ServiceProvider) error {
 		Email:                   pr.Email,
 		Password:                pr.Password,
 	}
-	return provider.db.Create(data).Error
+	return provider.db.Create(&data).Error
+}
+
+func (client ServiceProviderAccount) Login(email string) (*models.ServiceProvider, error) {
+	var c *models.ServiceProvider
+	return c, client.db.Where("email = ?", email).First(&c).Error
+
 }
 
 func (provider ServiceProviderAccount) Provider(providerId string) (models.ServiceProvider, error) {
@@ -62,7 +70,7 @@ func (provider ServiceProviderAccount) ProviderByEmail(email string) (models.Ser
 	return p, provider.db.Where("email = ?", email).First(&p).Error
 }
 
-func (provider ServiceProviderAccount) ClientByPhoneNumber(phoneNumber string) (models.ServiceProvider, error) {
+func (provider ServiceProviderAccount) ProviderByPhoneNumber(phoneNumber string) (models.ServiceProvider, error) {
 	var p models.ServiceProvider
 	return p, provider.db.Where("phone_number = ?", phoneNumber).First(&p).Error
 }
@@ -84,8 +92,8 @@ func (provider ServiceProviderAccount) DeactivateAccount(providerId string) erro
 }
 
 // complete activate account later
-func (provider ServiceProviderAccount) ActivateAccount(providerId string) error {
-	return nil
+func (provider ServiceProviderAccount) ActivateAccount(email string) error {
+	return provider.db.Model(&models.ServiceProvider{}).Unscoped().Where("email = ?", email).Update("deleted_at", nil).Error
 }
 
 func (provider ServiceProviderAccount) CreateAddress(add models.ServiceProviderAddress) error {
@@ -103,11 +111,18 @@ func (provider ServiceProviderAccount) AddressByProviderId(providerId string) (m
 	return ad, provider.db.Where("provider_id = ?", providerId).First(&ad).Error
 }
 
-func (provider ServiceProviderAccount) UpdateAddress(clientId string, data models.ServiceProviderAddress) error {
-	ad := models.ServiceProviderAddress{
+func (provider ServiceProviderAccount) UpdateAddress(providerId string, data *models.ServiceProviderAddress) error {
+	ad := &models.ServiceProviderAddress{
 		Name:    data.Name,
 		ZipCode: data.ZipCode,
 		City:    data.City,
 	}
-	return provider.db.Model(&ad).Where("provider_id = ?", clientId).Updates(&ad).Error
+	return provider.db.Model(&ad).Where("provider_id = ?", providerId).Updates(&ad).Error
+}
+
+func (client ServiceProviderAccount) UpdatePassword(data *models.ServiceProvider) error {
+	c := &models.ServiceProvider{
+		Password: data.Password,
+	}
+	return client.db.Model(&c).Where("email = ?", data.Email).Updates(&c).Error
 }
