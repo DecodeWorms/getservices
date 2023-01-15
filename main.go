@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"getservices/client"
 	handler "getservices/handlers"
+	"getservices/migrator"
 	"getservices/server"
 	"getservices/storage"
 	"getservices/vault"
@@ -16,9 +16,9 @@ import (
 var db storage.Conn
 
 // services for database migrations
-var clientStorage client.Client
-var serviceProviderStorage client.ServiceProvider
-var serviceStorage client.Service
+var clientStorage migrator.Client
+var serviceProviderStorage migrator.ServiceProvider
+var serviceStorage migrator.Service
 
 // services for clients and providers
 var clientService storage.ClientAccount
@@ -42,9 +42,9 @@ func init() {
 	db = storage.NewConn(c)
 
 	//handling table migration
-	clientStorage = client.NewCleint(db.Client)
-	serviceStorage = client.NewServices(db.Client)
-	serviceProviderStorage = client.NewServeProvider(db.Client)
+	clientStorage = migrator.NewCleint(db.Client)
+	serviceStorage = migrator.NewServices(db.Client)
+	serviceProviderStorage = migrator.NewServeProvider(db.Client)
 	clientHandler = handler.NewCleintMigration(clientStorage, serviceStorage, serviceProviderStorage)
 	clientServer = server.NewClientMigrationServer(clientHandler)
 	clientServer.MigrateModels(ctx)

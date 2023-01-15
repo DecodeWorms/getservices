@@ -3,18 +3,18 @@ package handler
 import (
 	"context"
 	"fmt"
-	"getservices/client"
+	"getservices/migrator"
 
 	"golang.org/x/sync/errgroup"
 )
 
 type ClientMigrationHandler struct {
-	ClientMig        client.ClientMigrations
-	ServiceMig       client.ServiceMigrations
-	ServiceProvidmig client.ServiceProviderMigrations
+	ClientMig        migrator.ClientMigrations
+	ServiceMig       migrator.ServiceMigrations
+	ServiceProvidmig migrator.ServiceProviderMigrations
 }
 
-func NewCleintMigration(cl client.ClientMigrations, srvMig client.ServiceMigrations, srvProMig client.ServiceProviderMigrations) ClientMigrationHandler {
+func NewCleintMigration(cl migrator.ClientMigrations, srvMig migrator.ServiceMigrations, srvProMig migrator.ServiceProviderMigrations) ClientMigrationHandler {
 	return ClientMigrationHandler{
 		ClientMig:        cl,
 		ServiceMig:       srvMig,
