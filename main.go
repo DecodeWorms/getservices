@@ -71,6 +71,7 @@ func main() {
 
 	//provider public api endpoint
 	router.POST("/provider", providerServer.SignUpProvider())
+	router.POST("/provider/login", providerServer.LoginProvider())
 
 	if err := router.Run(":080"); err != nil {
 		log.Println("error processing http server req")

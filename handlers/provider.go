@@ -94,3 +94,52 @@ func (providers ServiceProviderHandler) SignUpProvider(ctx *gin.Context, data mo
 
 	return nil
 }
+
+func (providers ServiceProviderHandler) LoginProvider(ctx *gin.Context, data models.ServiceProviderLoginJson) (*models.ServiceProviderLoginResponse, *errors.UserError) {
+	//validate login data from the json
+	v := validations.Validate{Validate: validations.NewVaLidate()}
+	valErr := ValidatedData(v, data)
+	if len(valErr) > 0 {
+		return nil, errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
+	}
+
+	//validate the email existense
+	prov, err := providers.providers.ProviderByEmail(data.Email)
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return nil, custom
+	}
+
+	//validate password
+	b := hashpassword.ComparePasswordWithHashed(prov.Password, data.Password)
+	if !b {
+		custom := errors.ErrValidatingPassword
+		return nil, custom
+	}
+
+	providerData, err := providers.providers.Login(prov.Email)
+	if err != nil {
+		custom := errors.ErrLoginUser
+		return nil, custom
+	}
+
+	providerAddress, err := providers.providers.AddressByProviderId(providerData.ServiceProviderId)
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return nil, custom
+	}
+	result := &models.ServiceProviderLoginResponse{}
+	result.ServiceProviderId = providerData.ServiceProviderId
+	result.FirstName = providerData.FirstName
+	result.LastName = providerData.LastName
+	result.PhoneNumber = providerData.PhoneNumber
+	result.Email = providerData.Email
+	result.IsFullyOnboarded = providerData.IsFullyOnboarded
+	result.IsAccountConfirmed = providerData.IsAccountConfirmed
+	result.Address.Name = providerAddress.Name
+	result.Address.City = providerAddress.City
+	result.Address.ZipCode = providerAddress.ZipCode
+
+	return result, nil
+
+}

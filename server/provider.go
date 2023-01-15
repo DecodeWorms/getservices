@@ -36,3 +36,20 @@ func (provider ProviderServer) SignUpProvider() gin.HandlerFunc {
 
 	}
 }
+
+func (provider ProviderServer) LoginProvider() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var data models.ServiceProviderLoginJson
+		if err := ctx.ShouldBindJSON(&data); err != nil {
+			errors.CustomError(pkg.CodeDataValidationError, err.Error())
+			return
+		}
+		clients, handlerErr := provider.provider.LoginProvider(ctx, data)
+		if handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, clients)
+
+	}
+}

@@ -108,7 +108,7 @@ func (provider ServiceProviderAccount) CreateAddress(add models.ServiceProviderA
 
 func (provider ServiceProviderAccount) AddressByProviderId(providerId string) (models.ServiceProviderAddress, error) {
 	var ad models.ServiceProviderAddress
-	return ad, provider.db.Where("provider_id = ?", providerId).First(&ad).Error
+	return ad, provider.db.Where("service_provider_id = ?", providerId).First(&ad).Error
 }
 
 func (provider ServiceProviderAccount) UpdateAddress(providerId string, data *models.ServiceProviderAddress) error {
