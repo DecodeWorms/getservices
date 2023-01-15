@@ -2,11 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"getservices/client"
 	"getservices/errors"
 	"getservices/hashpassword"
 	"getservices/models"
 	"getservices/pkg"
+	"getservices/storage"
 	"getservices/validations"
 	"strings"
 
@@ -15,12 +15,13 @@ import (
 )
 
 type ClientHandler struct {
-	ClientService client.ClientServices
+	ClientService storage.ClientServices
+	//ClientService storage.ClientServices
 	//ProviderServices client.ProviderServices
 	//Services         client.ServiceServices
 }
 
-func NewClientHandler(clientService client.ClientServices) ClientHandler {
+func NewClientHandler(clientService storage.ClientServices) ClientHandler {
 	return ClientHandler{
 		ClientService: clientService,
 		//ProviderServices: ProviderServices,
