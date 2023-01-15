@@ -14,42 +14,47 @@ import (
 )
 
 var db storage.Conn
+
+// services for database migrations
 var clientStorage client.Client
-var clientService client.ClientServices
 var serviceProviderStorage client.ServiceProvider
-var providerServ client.ProviderServices
 var serviceStorage client.Service
 
-var clientHandler handler.ClientMigrationHandler
-var clientHand handler.ClientHandler
-var serviceProviderHandler handler.ServiceProviderHandler
-var serviceHandler handler.ServicesHandler
+// services for clients and providers
+var clientService storage.ClientAccount
+var providerServ storage.ProviderServices
 
+// handler for migration tables
+var clientHandler handler.ClientMigrationHandler
+
+// handler for client, service and service providers
+var clientHand handler.ClientHandler
+
+// server handler for table migrations
 var clientServer server.ClientMigrationServer
+
+// server handler for clients , providers and services
 var clientServ server.ClientServer
-var serviceProviderServer server.ServiceProviderServer
-var serviceServer server.ServicesServer
 
 func init() {
 	var ctx context.Context
 	c := vault.GetVault()
 	db = storage.NewConn(c)
+
+	//handling table migration
 	clientStorage = client.NewCleint(db.Client)
-	clientService = client.NewClientAccount(db.Client)
-	serviceProviderStorage = client.NewServeProvider(db.Client)
-	//serviceProvid := client.NewServiceProviderAccount(db.Client)
 	serviceStorage = client.NewServices(db.Client)
-
+	serviceProviderStorage = client.NewServeProvider(db.Client)
 	clientHandler = handler.NewCleintMigration(clientStorage, serviceStorage, serviceProviderStorage)
-	clientHand := handler.NewClientHandler(clientService)
-	serviceProviderHandler = handler.NewServiceProviderHandler(serviceProviderStorage)
-	serviceHandler = handler.NewServiceHandler(serviceStorage)
-
 	clientServer = server.NewClientMigrationServer(clientHandler)
-	clientServ = server.NewClientServer(clientHand)
-	serviceProviderServer = server.NewServiceProviderServer(serviceProviderHandler)
-	serviceServer = server.NewServiceServer(serviceHandler)
 	clientServer.MigrateModels(ctx)
+
+	clientService = storage.NewClientAccount(db.Client)
+	//serviceProvid := client.NewServiceProviderAccount(db.Client)
+
+	clientHand := handler.NewClientHandler(clientService)
+
+	clientServ = server.NewClientServer(clientHand)
 
 }
 
