@@ -60,6 +60,7 @@ func main() {
 	router.PUT("/client", clientServ.UpdateClient())
 	router.DELETE("/client", clientServ.DeactivateAccount())
 	router.PUT("/client/reactivate", clientServ.ActivateAccount())
+	router.PUT("client/update_password", clientServ.UpdateClientPassword())
 
 	if err := router.Run(":080"); err != nil {
 		log.Println("error processing http server req")

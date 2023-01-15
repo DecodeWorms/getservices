@@ -218,6 +218,47 @@ func (client ClientHandler) ActivateAccount(ctx *gin.Context, email string) *err
 
 }
 
+func (client ClientHandler) UpdateClientPassword(ctx *gin.Context, email string, passwordData models.PasswordJson) *errors.UserError {
+	//check if the user data exist
+	cli, err := client.ClientService.ClientByEmail(email)
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return custom
+	}
+	//check if the new password is equivalent to the existing password
+	b := hashpassword.ComparePasswordWithHashed(cli.Password, passwordData.NewPassword)
+	if b {
+		custom := errors.ErrExistingPassword
+		return custom
+	}
+
+	//compare new passowrd with the confirm password
+	result := hashpassword.ComparePasswordWithConfirmPassword(passwordData.NewPassword, passwordData.ConfirmNewPassword)
+	if !result {
+		return errors.NewUserError(errors.StatusInternalServerError, "password and confirm password not match")
+	}
+
+	//hash the password
+	hashPassword, err := hashpassword.HashPasswordWithGivenCost([]byte(passwordData.NewPassword), hashpassword.DefaultCost)
+	if err != nil {
+		custom := errors.ErrHashingPassword
+		return custom
+	}
+
+	data := &models.Client{
+		Email:    email,
+		Password: hashPassword,
+	}
+
+	if err = client.ClientService.UpdatePassword(data); err != nil {
+		custom := errors.ErrUpdatingUserResource
+		return custom
+	}
+
+	return nil
+
+}
+
 func ValidatedData(v validations.Validate, data interface{}) []error {
 	errDetails := make([]error, 0)
 

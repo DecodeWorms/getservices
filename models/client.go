@@ -58,3 +58,9 @@ type ClientAddressJson struct {
 	ZipCode string `json:"zip_code" gorm:"zip_code" validate:"required"`
 	City    string `json:"city" gorm:"city" validate:"required"`
 }
+
+type PasswordJson struct {
+	Password           string `json:"password"`
+	NewPassword        string `json:"new_password"`
+	ConfirmNewPassword string `json:"confirm_new_password"`
+}

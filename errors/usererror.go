@@ -49,4 +49,5 @@ var (
 	ErrResourceIsDeactivated     = NewUserError(http.StatusBadRequest, "error resource is deactivated")          //client error , resource already deactivated
 	ErrDeactivatingResource      = NewUserError(http.StatusInternalServerError, "error deactivating an account") //server error, error deactivating an account
 	ErrActivatingResource        = NewUserError(http.StatusInternalServerError, "error activating resource")     //server error, error activating resources
+	ErrExistingPassword          = NewUserError(http.StatusBadRequest, "error existing password")                //client error , error new password equal to existing password
 )
