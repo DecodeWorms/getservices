@@ -41,3 +41,20 @@ type ServiceProviderAddressJson struct {
 	ZipCode string `json:"zip_code" gorm:"zipCode" validate:"required"`
 	City    string `json:"city" gorm:"city" validate:"required"`
 }
+
+type ServiceProviderLoginJson struct {
+	Email    string `json:"email" gorm:"email" validate:"required"`
+	Password string `json:"password" gorm:"password" validate:"required"`
+}
+
+type ServiceProviderLoginResponse struct {
+	ServiceProviderId  string            `json:"service_provider_id_id"`
+	FirstName          string            `json:"first_name"`
+	LastName           string            `json:"last_name"`
+	PhoneNumber        string            `json:"phone_number"`
+	Email              string            `json:"email" gorm:"email" validate:"required"`
+	IsFullyOnboarded   bool              `json:"is_fullyonboarded"`
+	IsAccountConfirmed bool              `json:"is_account_confirmed"`
+	Pin                string            `json:"pin"`
+	Address            ClientAddressJson `json:"address"`
+}
