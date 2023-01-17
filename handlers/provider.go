@@ -141,5 +141,43 @@ func (providers ServiceProviderHandler) LoginProvider(ctx *gin.Context, data mod
 	result.Address.ZipCode = providerAddress.ZipCode
 
 	return result, nil
+}
 
+func (provider ServiceProviderHandler) UpdatePassword(ctx *gin.Context, email string, passwordData models.PasswordJson) *errors.UserError {
+	//check if the user data exist
+	cli, err := provider.providers.ProviderByEmail(email)
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return custom
+	}
+	//check if the new password is equivalent to the existing password
+	b := hashpassword.ComparePasswordWithHashed(cli.Password, passwordData.NewPassword)
+	if b {
+		custom := errors.ErrExistingPassword
+		return custom
+	}
+
+	//compare new passowrd with the confirm password
+	result := hashpassword.ComparePasswordWithConfirmPassword(passwordData.NewPassword, passwordData.ConfirmNewPassword)
+	if !result {
+		return errors.NewUserError(errors.StatusInternalServerError, "password and confirm password not match")
+	}
+
+	//hash the password
+	hashPassword, err := hashpassword.HashPasswordWithGivenCost([]byte(passwordData.NewPassword), hashpassword.DefaultCost)
+	if err != nil {
+		custom := errors.ErrHashingPassword
+		return custom
+	}
+
+	data := &models.ServiceProvider{
+		Email:    email,
+		Password: hashPassword,
+	}
+
+	if err = provider.providers.UpdatePassword(data); err != nil {
+		custom := errors.ErrUpdatingUserResource
+		return custom
+	}
+	return nil
 }
