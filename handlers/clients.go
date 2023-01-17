@@ -257,7 +257,6 @@ func (client ClientHandler) UpdateClientPassword(ctx *gin.Context, email string,
 	}
 
 	return nil
-
 }
 
 func ValidatedData(v validations.Validate, data interface{}) []error {
