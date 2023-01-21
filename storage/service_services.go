@@ -48,7 +48,7 @@ func (service ServiceAccount) Create(serv models.Services) error {
 
 func (service ServiceAccount) Service(serviceId string) (models.Services, error) {
 	var s models.Services
-	return s, service.db.Where("client_id = ?", serviceId).First(&s).Error
+	return s, service.db.Where("service_provider_id = ?", serviceId).First(&s).Error
 }
 
 func (service ServiceAccount) Services() ([]models.Services, error) {
@@ -61,28 +61,28 @@ func (service ServiceAccount) ServiceByEmail(email string) (models.Services, err
 	return s, service.db.Where("email = ?", email).First(&s).Error
 }
 
-func (service ServiceAccount) ClientByPhoneNumber(phoneNumber string) (models.Services, error) {
+func (service ServiceAccount) ServiceByPhoneNumber(phoneNumber string) (models.Services, error) {
 	var s models.Services
 	return s, service.db.Where("phone_number = ?", phoneNumber).First(&s).Error
 }
 
-func (service ServiceAccount) Update(clientId string, data models.Services) error {
+func (service ServiceAccount) Update(providerId string, data models.Services) error {
 	c := models.Services{
 		CompanyName:      data.CompanyName,
 		YearOfExperience: data.YearOfExperience,
 		Email:            data.Email,
 		PhoneNumber:      data.PhoneNumber,
 	}
-	return service.db.Where("client_id = ?", clientId).Updates(&c).Error
+	return service.db.Where("service_provider_id = ?", providerId).Updates(&c).Error
 }
 
-func (service ServiceAccount) DeactivateAccount(clientId string) error {
-	var s models.Client
-	return service.db.Model(&s).Where("client_id = ?", clientId).Delete(s).Error
+func (service ServiceAccount) DeactivateAccount(providerId string) error {
+	var s models.Services
+	return service.db.Model(&s).Where("service_provider_id = ?", providerId).Delete(s).Error
 }
 
 // complete activate account later
-func (client ServiceAccount) ActivateAccount(clientId string) error {
+func (client ServiceAccount) ActivateAccount(providerId string) error {
 	return nil
 }
 
@@ -98,7 +98,7 @@ func (service ServiceAccount) CreateAddress(add models.ServiceAddress) error {
 
 func (service ServiceAccount) AddressByServiceId(serviceId string) (models.ServiceAddress, error) {
 	var ad models.ServiceAddress
-	return ad, service.db.Where("provider_id = ?", serviceId).First(&ad).Error
+	return ad, service.db.Where("service_provider_id = ?", serviceId).First(&ad).Error
 }
 
 func (provider ServiceAccount) UpdateAddress(serviceId string, data models.ServiceAddress) error {
@@ -107,5 +107,5 @@ func (provider ServiceAccount) UpdateAddress(serviceId string, data models.Servi
 		ZipCode: data.ZipCode,
 		City:    data.City,
 	}
-	return provider.db.Model(&ad).Where("provider_id = ?", serviceId).Updates(&ad).Error
+	return provider.db.Model(&ad).Where("service_provider_id = ?", serviceId).Updates(&ad).Error
 }
