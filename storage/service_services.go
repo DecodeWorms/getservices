@@ -12,13 +12,15 @@ type ServiceServices interface {
 	Service(serviceId string) (models.Services, error)
 	Services() ([]models.Services, error)
 	ServiceByEmail(email string) (models.Services, error)
-	ServiceByPhoneNumber(phoneNumber string) (models.Services, error)
-	Update(serviceId string, cl models.Client) error
+	ServiceByCompanyName(companyName string)(*models.Services, error)
+	ServiceByService(serviceName string) ([]*models.Services, error)
+	ServiceByPhoneNumber(phoneNumber string) (*models.Services, error)
+	Update(serviceId string, cl models.Services) error
 	DeactivateAccount(serviceId string) error
-	ActivateAccount(email string) (models.Client, error)
+	ActivateAccount(email string)  error
 	CreateAddress(add models.ServiceAddress) error
-	AddressByServiceId(serviceId string) (models.ServiceAddress, error)
-	UpdateAddress(serviceId string) (models.ServiceAddress, error)
+	AddressByProviderId(serviceId string) (models.ServiceAddress, error)
+	UpdateAddress(serviceId string ,data models.ServiceAddress)error
 }
 
 type ServiceAccount struct {
@@ -40,10 +42,10 @@ func (service ServiceAccount) Create(serv models.Services) error {
 		ServiceProviderId: serv.ServiceProviderId,
 		PhoneNumber:       serv.PhoneNumber,
 		YearOfExperience:  serv.YearOfExperience,
+		Service: serv.Service,
 		CompanyName:       serv.CompanyName,
-		Email:             serv.Email,
 	}
-	return service.db.Create(data).Error
+	return service.db.Create(&data).Error
 }
 
 func (service ServiceAccount) Service(serviceId string) (models.Services, error) {
@@ -82,8 +84,18 @@ func (service ServiceAccount) DeactivateAccount(clientId string) error {
 }
 
 // complete activate account later
-func (client ServiceAccount) ActivateAccount(clientId string) error {
+func (service ServiceAccount) ActivateAccount(clientId string) error {
 	return nil
+}
+
+func(service ServiceAccount)ServiceByPhoneNumber(phoneNumber string)(*models.Services, error){
+	var s *models.Services
+	return s, service.db.Where("phone_number = ?",phoneNumber).First(&s).Error
+}
+
+func(service ServiceAccount)ServiceByService(serviceCat string)([]*models.Services, error){
+	var s []*models.Services
+	return s, service.db.Where("service = ?",serviceCat).Find(&s).Error
 }
 
 func (service ServiceAccount) CreateAddress(add models.ServiceAddress) error {
@@ -96,16 +108,21 @@ func (service ServiceAccount) CreateAddress(add models.ServiceAddress) error {
 	return service.db.Create(&ad).Error
 }
 
-func (service ServiceAccount) AddressByServiceId(serviceId string) (models.ServiceAddress, error) {
+func (service ServiceAccount) AddressByProviderId(providerId string) (models.ServiceAddress, error) {
 	var ad models.ServiceAddress
-	return ad, service.db.Where("provider_id = ?", serviceId).First(&ad).Error
+	return ad, service.db.Where("service_provider_id = ?", providerId).First(&ad).Error
 }
 
-func (provider ServiceAccount) UpdateAddress(serviceId string, data models.ServiceAddress) error {
+func (service ServiceAccount) UpdateAddress(serviceId string, data models.ServiceAddress) error {
 	ad := models.ServiceAddress{
 		Name:    data.Name,
 		ZipCode: data.ZipCode,
 		City:    data.City,
 	}
-	return provider.db.Model(&ad).Where("provider_id = ?", serviceId).Updates(&ad).Error
+	return service.db.Model(&ad).Where("provider_id = ?", serviceId).Updates(&ad).Error
+}
+
+func(service ServiceAccount)ServiceByCompanyName(companyName string)(*models.Services , error){
+	var s *models.Services
+	return s , service.db.Where("company_name = ?", companyName).First(&s).Error
 }

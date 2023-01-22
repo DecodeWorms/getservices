@@ -34,3 +34,12 @@ func GetUserFirstTwoChar(firstName string) string {
 	}
 	return strings.ToLower(result) + "-"
 }
+
+func ParseCategory(cat string)bool{
+	for _ , category := range ServiceCategory{
+		if cat == category{
+			return true
+		}
+	}
+	return false
+}

@@ -57,7 +57,7 @@ func (client ServiceProviderAccount) Login(email string) (*models.ServiceProvide
 
 func (provider ServiceProviderAccount) Provider(providerId string) (models.ServiceProvider, error) {
 	var p models.ServiceProvider
-	return p, provider.db.Where("client_id = ?", providerId).First(&p).Error
+	return p, provider.db.Where("service_provider_id = ?", providerId).First(&p).Error
 }
 
 func (provider ServiceProviderAccount) Providers() ([]models.ServiceProvider, error) {

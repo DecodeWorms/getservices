@@ -42,6 +42,7 @@ var (
 	ErrHashingPassword           = NewUserError(StatusInternalServerError, "error hashing password")             //server error, unable to hash user password
 	ErrValidattingUserData       = NewUserError(http.StatusBadRequest, "error validating user data")             //client error , error validating user error
 	ErrCreatingUser              = NewUserError(http.StatusInternalServerError, "error creating user")           //error creating user
+	ErrCreatingServices          = NewUserError(http.StatusInternalServerError, "error creating service")        //error creating service
 	ErrCreatingAddress           = NewUserError(http.StatusInternalServerError, "error creating address")        //server error in creating user address
 	ErrValidatingPassword        = NewUserError(http.StatusInternalServerError, "error validating password")     //server error , error validating password
 	ErrLoginUser                 = NewUserError(http.StatusInternalServerError, "error login in user")           //server error ,error login in user
@@ -50,4 +51,6 @@ var (
 	ErrDeactivatingResource      = NewUserError(http.StatusInternalServerError, "error deactivating an account") //server error, error deactivating an account
 	ErrActivatingResource        = NewUserError(http.StatusInternalServerError, "error activating resource")     //server error, error activating resources
 	ErrExistingPassword          = NewUserError(http.StatusBadRequest, "error existing password")                //client error , error new password equal to existing password
+	ErrUnknownCategory = NewUserError(http.StatusBadRequest, "error parsing service category") //client error, error parsing servoce category
+	ErrCompanyNameAlreadyExist = NewUserError(http.StatusBadRequest, "error company name is registered") //client error , error company name is already exist
 )
