@@ -1,4 +1,4 @@
-package handler
+package handlers
 
 import (
 	"context"
@@ -72,7 +72,9 @@ func (cl ClientMigrationHandler) MigrateModels(ctx context.Context) error {
 		}
 		return nil
 	})
-	g.Wait()
+	if err := g.Wait(); err != nil{
+		return  err
+	}
 
 	return nil
 

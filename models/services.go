@@ -8,6 +8,7 @@ type Services struct {
 	ServiceProviderId  string
 	PhoneNumber        string
 	YearOfExperience   string
+	Service            string
 	CompanyName        string
 	Email              string
 	IsFullyOnboarded   bool
@@ -16,13 +17,11 @@ type Services struct {
 }
 
 type ServiceJson struct {
-	FirstName   string `json:"first_name" gorm:"firstName" validate:"required"`
-	LastName    string `json:"last_name" gorm:"lastName" validate:"required"`
-	PhoneNumber string `json:"phone_number" gorm:"phoneNumber" validate:"required"`
-	Email       string `json:"email" gorm:"email" validate:"required"`
-	Password    string `json:"password" gorm:"password" validate:"required"`
-	Pin         string `json:"pin" gorm:"pin" validate:"required"`
-	Address     ServiceProviderAddressJson
+	PhoneNumber       string `json:"phone_number" validate:"required"`
+	YearOfExperience  string `json:"year_of_experience" validate:"required"`
+	Service           string `json:"service" validate:"required"`
+	CompanyName       string `json:"company_name" validate:"required"`
+	Address           ServiceProviderAddressJson
 }
 
 type ServiceAddress struct {
@@ -38,4 +37,15 @@ type ServiceAddressJson struct {
 	Name    string `json:"name" gorm:"name" validate:"required"`
 	ZipCode string `json:"zip_code" gorm:"zipCode" validate:"required"`
 	City    string `json:"city" gorm:"city" validate:"required"`
+}
+
+type ServiceProviderDetail struct{
+	FullName string `json:"full_name"`
+	PhoneNumber string `json:"phone_number"`
+	Email string `json:"email"`
+	CompanyName string `json:"company_name"`
+	Service string `json:"service"`
+	CompanyPhoneNumber string `json:"company_phone_number"`
+	AddressName string `json:"address_name"`
+	AddressCity string `json:"address_city"`
 }
