@@ -45,17 +45,22 @@ func (providers ServiceProviderHandler) SignUpProvider(ctx *gin.Context, data mo
 		return errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
 	}
 
+		//parse password
+	if b := hashpassword.ParsePassword(data.Password); !b{
+		custom := errors.ErrPasswordStrength
+		return custom
+	}
+		//compare password and confirm password
+	result := hashpassword.ComparePasswordWithConfirmPassword(data.Password, data.ConfirmPassword)
+	if !result {
+		return errors.NewUserError(errors.StatusInternalServerError, "password and confirm password not match")
+	}
+
 	//hash password from client
 	hashedPassword, err := hashpassword.HashPasswordWithGivenCost([]byte(data.Password), hashpassword.MaxCost)
 	if err != nil {
 		custom := errors.ErrHashingPassword
 		return custom
-	}
-
-	//compare password and confirm password
-	result := hashpassword.ComparePasswordWithConfirmPassword(data.Password, data.ConfirmPassword)
-	if !result {
-		return errors.NewUserError(errors.StatusInternalServerError, "password and confirm password not match")
 	}
 
 	//get user first two characters

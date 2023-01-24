@@ -40,6 +40,7 @@ var (
 	ErrEmailAlreadyExist         = NewUserError(http.StatusForbidden, "error user email  already exist")         //client error, user email already exist
 	ErrPhoneNumberAlreadyExist   = NewUserError(http.StatusForbidden, "error phone number already exist")        //client error , user phone number already exist
 	ErrHashingPassword           = NewUserError(StatusInternalServerError, "error hashing password")             //server error, unable to hash user password
+	ErrPasswordStrength = NewUserError(http.StatusInternalServerError, "error password not strong enough") //server error, error password not strong enough
 	ErrValidattingUserData       = NewUserError(http.StatusBadRequest, "error validating user data")             //client error , error validating user error
 	ErrCreatingUser              = NewUserError(http.StatusInternalServerError, "error creating user")           //error creating user
 	ErrCreatingServices          = NewUserError(http.StatusInternalServerError, "error creating service")        //error creating service

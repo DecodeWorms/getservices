@@ -9,7 +9,7 @@ import (
 
 type ServiceServices interface {
 	Create(cl models.Services) error
-	Service(serviceId string) (models.Services, error)
+	Service(serviceId string) (*models.Services, error)
 	Services() ([]models.Services, error)
 	ServiceByEmail(email string) (models.Services, error)
 	ServiceByCompanyName(companyName string)(*models.Services, error)
@@ -48,9 +48,9 @@ func (service ServiceAccount) Create(serv models.Services) error {
 	return service.db.Create(&data).Error
 }
 
-func (service ServiceAccount) Service(serviceId string) (models.Services, error) {
-	var s models.Services
-	return s, service.db.Where("client_id = ?", serviceId).First(&s).Error
+func (service ServiceAccount) Service(serviceId string) (*models.Services, error) {
+	var s *models.Services
+	return s, service.db.Where("service_provider_id = ?", serviceId).First(&s).Error
 }
 
 func (service ServiceAccount) Services() ([]models.Services, error) {
