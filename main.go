@@ -83,6 +83,7 @@ func main() {
 	router.GET("/service/categories",serviceServer.GetServicesCategories())
 	router.GET("/services",serviceServer.GetServices())
 	router.POST("/service", serviceServer.CreateService())
+	router.GET("/service",serviceServer.GetService())
 
 	if err := router.Run(":080"); err != nil {
 		log.Println("error processing http server req")

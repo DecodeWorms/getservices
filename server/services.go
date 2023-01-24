@@ -60,3 +60,15 @@ func(service ServiceServer)GetServices()gin.HandlerFunc{
 
 	}
 }
+
+func(service ServiceServer)GetService()gin.HandlerFunc{
+	return func(ctx *gin.Context) {
+		email := ctx.Query("email")
+		data , handlerErr := service.service.GetService(ctx, email)
+		if handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, data)
+	}
+}

@@ -130,17 +130,47 @@ func(service ServiceHandler)GetServices(ctx *gin.Context, serviceName string)([]
 		if err := g.Wait(); err != nil{
 			return nil , errors.ErrResourceNotFound
 		}
-     		//res := &models.ServiceProviderDetail{
-			//FullName: fmt.Sprintf("%s %s",provid.FirstName,provid.LastName),
-			//PhoneNumber: provid.PhoneNumber,
-			//Email: provid.Email,
-			//CompanyName: serv.CompanyName,
-			//CompanyPhoneNumber: serv.PhoneNumber,
-			//AddressName: add.Name,
-			//AddressCity: add.City,
-		//}
 		result = append(result, res)
 	}
 	return result , nil
+}
+
+func(service ServiceHandler)GetService(ctx *gin.Context ,email string)(*models.ServiceProviderDetail, *errors.UserError){
+	res := &models.ServiceProviderDetail{}
+	prov , err := service.Provider.ProviderByEmail(email)
+	if err != nil{
+		custom := errors.ErrResourceNotFound
+		return nil, custom
+	}
 	
+	var g errgroup.Group
+	g.Go(func() error {
+		serv , err := service.Service.Service(prov.ServiceProviderId)
+		if err != nil{
+			return err
+		}
+		res.CompanyName = serv.CompanyName
+		res.Service = serv.Service
+		res.CompanyPhoneNumber = serv.PhoneNumber
+		return nil
+	})
+
+	g.Go(func() error {
+		add , err := service.Service.AddressByProviderId(prov.ServiceProviderId)
+		if err != nil{
+			return err
+		}
+	     res.AddressName = add.Name
+	     res.AddressCity = add.City
+		 return nil
+	})
+
+	if err := g.Wait(); err !=nil{
+		return nil , errors.ErrResourceNotFound
+	}
+	res.FullName = fmt.Sprintf("%s %s",prov.FirstName, prov.LastName)
+	res.PhoneNumber = prov.PhoneNumber
+	res.Email = prov.Email
+
+	return res, nil
 }
