@@ -24,9 +24,9 @@ func NewServiceHandler(serv storage.ServiceServices, prov storage.ProviderServic
 	}
 }
 
-func (service ServiceHandler) CreateService(ctx *gin.Context, email string, data models.ServiceJson) *errors.UserError {
-	//check if the user by email exist
-	provider, err := service.Provider.ProviderByEmail(email)
+func (service ServiceHandler) CreateService(ctx *gin.Context, id string, data models.ServiceJson) *errors.UserError {
+	//check if the user record exist
+	provider, err := service.Provider.Provider(id)
 	if err != nil {
 		custom := errors.ErrResourceNotFound
 		return custom
@@ -173,4 +173,24 @@ func(service ServiceHandler)GetService(ctx *gin.Context ,email string)(*models.S
 	res.Email = prov.Email
 
 	return res, nil
+}
+
+func(service ServiceHandler)UpdateAddress(ctx *gin.Context, serviceProviderId string, data models.ServiceAddressJson)*errors.UserError{
+	//confirm if the service provider record exist
+	_ , err := service.Provider.Provider(serviceProviderId)
+	if err != nil{
+		custom := errors.ErrResourceNotFound
+		return custom
+	}
+	add := &models.ServiceAddress{
+		Name: data.Name,
+		City: data.City,
+		ZipCode: data.ZipCode,
+	}
+	if err := service.Service.UpdateAddress(serviceProviderId,add); err != nil{
+		custom := errors.ErrUpdatingUserResource
+		fmt.Println(custom)
+		return custom
+	}
+	return nil
 }

@@ -84,6 +84,7 @@ func main() {
 	router.GET("/services",serviceServer.GetServices())
 	router.POST("/service", serviceServer.CreateService())
 	router.GET("/service",serviceServer.GetService())
+	router.PUT("/service/address",serviceServer.UpdateAddress())
 
 	if err := router.Run(":080"); err != nil {
 		log.Println("error processing http server req")

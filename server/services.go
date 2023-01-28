@@ -24,13 +24,13 @@ func NewServiceServer(serv handlers.ServiceHandler)ServiceServer{
 func(service ServiceServer)CreateService()gin.HandlerFunc{
 	return func(ctx *gin.Context) {
 		var jsonData models.ServiceJson
-		email := ctx.Query("email")
+		id := ctx.Query("id")
 
 		if err := ctx.ShouldBindJSON(&jsonData); err != nil {
 			errors.CustomError(pkg.CodeDataValidationError, err.Error())
 			return
 		}
-		handlerErr := service.service.CreateService(ctx, email,jsonData)
+		handlerErr := service.service.CreateService(ctx, id,jsonData)
 		if handlerErr != nil {
 			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
 			return
@@ -70,5 +70,23 @@ func(service ServiceServer)GetService()gin.HandlerFunc{
 			return
 		}
 		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, data)
+	}
+}
+
+func(service ServiceServer)UpdateAddress()gin.HandlerFunc{
+	return func(ctx *gin.Context) {
+		id := ctx.Query("id")
+		var data models.ServiceAddressJson
+		if err := ctx.ShouldBindJSON(&data); err != nil {
+			errors.CustomError(pkg.CodeDataValidationError, err.Error())
+			return
+		}
+		handlerErr := service.service.UpdateAddress(ctx, id,data)
+		if handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, nil)
+
 	}
 }

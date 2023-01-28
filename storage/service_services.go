@@ -20,7 +20,7 @@ type ServiceServices interface {
 	ActivateAccount(email string)  error
 	CreateAddress(add models.ServiceAddress) error
 	AddressByProviderId(serviceId string) (models.ServiceAddress, error)
-	UpdateAddress(serviceId string ,data models.ServiceAddress)error
+	UpdateAddress(serviceProviderId string ,data *models.ServiceAddress)error
 }
 
 type ServiceAccount struct {
@@ -113,13 +113,14 @@ func (service ServiceAccount) AddressByProviderId(providerId string) (models.Ser
 	return ad, service.db.Where("service_provider_id = ?", providerId).First(&ad).Error
 }
 
-func (service ServiceAccount) UpdateAddress(serviceId string, data models.ServiceAddress) error {
-	ad := models.ServiceAddress{
+func (service ServiceAccount) UpdateAddress(serviceProviderId string, data *models.ServiceAddress) error {
+	data.UpdatedAt = time.Now()
+	ad := &models.ServiceAddress{
 		Name:    data.Name,
 		ZipCode: data.ZipCode,
 		City:    data.City,
 	}
-	return service.db.Model(&ad).Where("provider_id = ?", serviceId).Updates(&ad).Error
+	return service.db.Model(&ad).Where("service_provider_id = ?", serviceProviderId).Updates(&ad).Error
 }
 
 func(service ServiceAccount)ServiceByCompanyName(companyName string)(*models.Services , error){
