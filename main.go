@@ -55,7 +55,7 @@ func init() {
 
 	clientHand := handler.NewClientHandler(clientService)
 	providerHandler := handler.NewServiceProviderHandler(providerService)
-	serviceHandler := handler.NewServiceHandler(serviceService,providerService)
+	serviceHandler := handler.NewServiceHandler(serviceService, providerService)
 
 	clientServ = server.NewClientServer(clientHand)
 	providerServer = server.NewProviderServer(providerHandler)
@@ -74,17 +74,18 @@ func main() {
 	router.PUT("/client/reactivate", clientServ.ActivateAccount())
 	router.PUT("client/update_password", clientServ.UpdateClientPassword())
 
-	//provider public api endpoint
+	//provider public api endpoints
 	router.POST("/provider", providerServer.SignUpProvider())
 	router.POST("/provider/login", providerServer.LoginProvider())
 	router.PUT("provider/update_password", providerServer.UpdatePassword())
 
-	//service public endpoint
-	router.GET("/service/categories",serviceServer.GetServicesCategories())
-	router.GET("/services",serviceServer.GetServices())
+	//service public api endpoints
+	router.GET("/service/categories", serviceServer.GetServicesCategories())
+	router.GET("/services", serviceServer.GetServices())
 	router.POST("/service", serviceServer.CreateService())
-	router.GET("/service",serviceServer.GetService())
-	router.PUT("/service/address",serviceServer.UpdateAddress())
+	router.GET("/service", serviceServer.GetService())
+	router.PUT("/service/address", serviceServer.UpdateAddress())
+	router.PUT("/service", serviceServer.UpdateService())
 
 	if err := router.Run(":080"); err != nil {
 		log.Println("error processing http server req")

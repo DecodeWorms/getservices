@@ -20,8 +20,11 @@ type ClientServices interface {
 	CreateAddress(add models.Address) error
 	AddressByClientId(clientId string) (models.Address, error)
 	UpdateAddress(clientId string, data models.Address) error
-	GetDeletedAgentByEmail(email string) (*models.Client, error)
+	GetDeletedAgentById(id string) (*models.Client, error)
+	GetDeletdAddressById(id string)(*models.Address, error)
 	UpdatePassword(passwordData *models.Client) error
+	DeactivateAddress(clientId string)error
+	ActivateAddress(clientId string)error
 }
 
 type ClientAccount struct {
@@ -90,12 +93,22 @@ func (client ClientAccount) Update(clientId string, data models.Client) error {
 
 func (client ClientAccount) DeactivateAccount(clientId string) error {
 	var c *models.Client
+	//c.DeletedAt = time.Now()
 	return client.db.Model(&c).Where("client_id = ?", clientId).Delete(&c).Error
+}
+
+func(client ClientAccount)DeactivateAddress(clientId string)error{
+	var a *models.Address
+	return client.db.Model(&a).Where("client_id = ?", clientId).Delete(&a).Error
 }
 
 // complete activate account later
 func (client ClientAccount) ActivateAccount(clientId string) error {
 	return client.db.Model(&models.Client{}).Unscoped().Where("client_id = ?", clientId).Update("deleted_at", nil).Error
+}
+
+func(client ClientAccount)ActivateAddress(clientId string)error{
+	return client.db.Model(&models.Address{}).Unscoped().Where("client_id = ?",clientId).Update("deleted_at", nil).Error
 }
 
 func (client ClientAccount) CreateAddress(add models.Address) error {
@@ -124,9 +137,14 @@ func (client ClientAccount) UpdateAddress(clientId string, data models.Address) 
 	return client.db.Model(&ad).Where("client_id = ?", clientId).Updates(&ad).Error
 }
 
-func (client ClientAccount) GetDeletedAgentByEmail(email string) (*models.Client, error) {
+func (client ClientAccount) GetDeletedAgentById(id string) (*models.Client, error) {
 	var c *models.Client
-	return c, client.db.Unscoped().Where("email = ?", email).First(&c).Error
+	return c, client.db.Unscoped().Where("client_id = ?", id).First(&c).Error
+}
+
+func(client ClientAccount)GetDeletdAddressById(id string)(*models.Address, error){
+	var ad *models.Address
+	return ad, client.db.Unscoped().Where("client_id = ?",id).First(&ad).Error
 }
 
 func (client ClientAccount) UpdatePassword(data *models.Client) error {

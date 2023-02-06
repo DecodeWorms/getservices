@@ -17,11 +17,12 @@ type Services struct {
 }
 
 type ServiceJson struct {
-	PhoneNumber       string `json:"phone_number" validate:"required"`
-	YearOfExperience  string `json:"year_of_experience" validate:"required"`
-	Service           string `json:"service" validate:"required"`
-	CompanyName       string `json:"company_name" validate:"required"`
-	Address           ServiceProviderAddressJson
+	PhoneNumber      string `json:"phone_number" validate:"required"`
+	YearOfExperience string `json:"year_of_experience" validate:"required"`
+	Service          string `json:"service" validate:"required"`
+	CompanyName      string `json:"company_name" validate:"required"`
+	Email            string `json:"email"`
+	Address          ServiceProviderAddressJson
 }
 
 type ServiceAddress struct {
@@ -39,13 +40,13 @@ type ServiceAddressJson struct {
 	City    string `json:"city" gorm:"city" validate:"required"`
 }
 
-type ServiceProviderDetail struct{
-	FullName string `json:"full_name"`
-	PhoneNumber string `json:"phone_number"`
-	Email string `json:"email"`
-	CompanyName string `json:"company_name"`
-	Service string `json:"service"`
+type ServiceProviderDetail struct {
+	FullName           string `json:"full_name"`
+	PhoneNumber        string `json:"phone_number"`
+	Email              string `json:"email"`
+	CompanyName        string `json:"company_name"`
+	Service            string `json:"service"`
 	CompanyPhoneNumber string `json:"company_phone_number"`
-	AddressName string `json:"address_name"`
-	AddressCity string `json:"address_city"`
+	AddressName        string `json:"address_name"`
+	AddressCity        string `json:"address_city"`
 }

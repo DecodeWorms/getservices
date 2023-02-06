@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"golang.org/x/sync/errgroup"
 )
 
 type ClientHandler struct {
@@ -54,13 +55,13 @@ func (client ClientHandler) SignUpClient(ctx *gin.Context, data models.ClientJso
 		return errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
 	}
 
-		//parse password
-	if b := hashpassword.ParsePassword(data.Password); !b{
+	//parse password
+	if b := hashpassword.ParsePassword(data.Password); !b {
 		custom := errors.ErrPasswordStrength
 		return custom
 	}
 
-		//compare password and confirm password
+	//compare password and confirm password
 	result := hashpassword.ComparePasswordWithConfirmPassword(data.Password, data.ConfirmPassword)
 	if !result {
 		return errors.NewUserError(errors.StatusInternalServerError, "password and confirm password not match")
@@ -198,31 +199,67 @@ func (client ClientHandler) UpdateClient(ctx *gin.Context, data models.ClientJso
 
 }
 
-func (client ClientHandler) DeactivateClientAccount(ctx *gin.Context, email string) *errors.UserError {
-	cli, err := client.ClientService.ClientByEmail(email)
+func (client ClientHandler) DeactivateClientAccount(ctx *gin.Context, clientId string) *errors.UserError {
+	_, err := client.ClientService.Client(clientId)
 	if err != nil {
 		custom := errors.ErrResourceNotFound
 		return custom
 	}
-	if err = client.ClientService.DeactivateAccount(cli.ClientId); err != nil {
-		custom := errors.ErrDeactivatingResource
-		return custom
+	//deactivate both client and his address using concurrency
+	var g errgroup.Group
+	g.Go(func() error {
+		if err := client.ClientService.DeactivateAccount(clientId); err != nil {
+			//custom := errors.ErrDeactivatingResource
+			return err
+		}
+		return nil
+	})
+
+	g.Go(func() error {
+		if err := client.ClientService.DeactivateAddress(clientId); err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err := g.Wait(); err != nil {
+		return errors.ErrDeactivatingResource
 	}
 	return nil
 }
 
-func (client ClientHandler) ActivateAccount(ctx *gin.Context, email string) *errors.UserError {
-	cli, err := client.ClientService.GetDeletedAgentByEmail(email)
+func (client ClientHandler) ActivateAccount(ctx *gin.Context, id string) *errors.UserError {
+	_, err := client.ClientService.GetDeletedAgentById(id)
 	if err != nil {
 		custom := errors.ErrResourceNotFound
 		return custom
 	}
-	if err = client.ClientService.ActivateAccount(cli.ClientId); err != nil {
-		custom := errors.ErrActivatingResource
+	_, err = client.ClientService.GetDeletdAddressById(id)
+	if err != nil {
+		custom := errors.ErrResourceNotFound
 		return custom
+
+	}
+	//update client account and his address using concurrency
+	var g errgroup.Group
+	g.Go(func() error {
+		if err := client.ClientService.ActivateAccount(id); err != nil {
+			return err
+		}
+		return nil
+	})
+
+	g.Go(func() error {
+		if err := client.ClientService.ActivateAddress(id); err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err := g.Wait(); err != nil {
+		return errors.ErrActivatingResource
 	}
 	return nil
-
 }
 
 func (client ClientHandler) UpdateClientPassword(ctx *gin.Context, email string, passwordData models.PasswordJson) *errors.UserError {
@@ -239,7 +276,7 @@ func (client ClientHandler) UpdateClientPassword(ctx *gin.Context, email string,
 		return custom
 	}
 
-	//compare new passowrd with the confirm password
+	//compare new password with the confirm password
 	result := hashpassword.ComparePasswordWithConfirmPassword(passwordData.NewPassword, passwordData.ConfirmNewPassword)
 	if !result {
 		return errors.NewUserError(errors.StatusInternalServerError, "password and confirm password not match")

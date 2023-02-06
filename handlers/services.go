@@ -40,14 +40,14 @@ func (service ServiceHandler) CreateService(ctx *gin.Context, id string, data mo
 	}
 
 	//parse category
-	if b := pkg.ParseCategory(data.Service); !b{
+	if b := pkg.ParseCategory(data.Service); !b {
 		custom := errors.ErrUnknownCategory
 		return custom
 	}
 
 	//check if the company name is unique
-	_ , err = service.Service.ServiceByCompanyName(data.CompanyName)
-	if err == nil{
+	_, err = service.Service.ServiceByCompanyName(data.CompanyName)
+	if err == nil {
 		custom := errors.ErrCompanyNameAlreadyExist
 		return custom
 	}
@@ -87,36 +87,36 @@ func (service ServiceHandler) CreateService(ctx *gin.Context, id string, data mo
 	return nil
 }
 
-func(service ServiceHandler)GetServicesCategories(ctx *gin.Context)[]string{
+func (service ServiceHandler) GetServicesCategories(ctx *gin.Context) []string {
 	return pkg.ServiceCategory
 }
 
-func(service ServiceHandler)GetServices(ctx *gin.Context, serviceName string)([]*models.ServiceProviderDetail, *errors.UserError){
-	result := make([]*models.ServiceProviderDetail , 0)
+func (service ServiceHandler) GetServices(ctx *gin.Context, serviceName string) ([]*models.ServiceProviderDetail, *errors.UserError) {
+	result := make([]*models.ServiceProviderDetail, 0)
 
-	services , err := service.Service.ServiceByService(serviceName)
-	if err != nil{
+	services, err := service.Service.ServiceByService(serviceName)
+	if err != nil {
 		custom := errors.ErrResourceNotFound
-		return nil ,custom
+		return nil, custom
 	}
 
-	for _ , serv := range services{
+	for _, serv := range services {
 		res := &models.ServiceProviderDetail{}
 		var g errgroup.Group
 		g.Go(func() error {
-			provid , err := service.Provider.Provider(serv.ServiceProviderId)
-			if err != nil{
+			provid, err := service.Provider.Provider(serv.ServiceProviderId)
+			if err != nil {
 				return err
 			}
 			res.PhoneNumber = provid.PhoneNumber
-			res.FullName = fmt.Sprintf("%s %s",provid.FirstName,provid.LastName)
+			res.FullName = fmt.Sprintf("%s %s", provid.FirstName, provid.LastName)
 			res.Email = provid.Email
 			return nil
 		})
 
 		g.Go(func() error {
-			add , err := service.Service.AddressByProviderId(serv.ServiceProviderId)
-			if err != nil{
+			add, err := service.Service.AddressByProviderId(serv.ServiceProviderId)
+			if err != nil {
 				return err
 			}
 			res.CompanyName = serv.CompanyName
@@ -127,26 +127,26 @@ func(service ServiceHandler)GetServices(ctx *gin.Context, serviceName string)([]
 			return nil
 
 		})
-		if err := g.Wait(); err != nil{
-			return nil , errors.ErrResourceNotFound
+		if err := g.Wait(); err != nil {
+			return nil, errors.ErrResourceNotFound
 		}
 		result = append(result, res)
 	}
-	return result , nil
+	return result, nil
 }
 
-func(service ServiceHandler)GetService(ctx *gin.Context ,email string)(*models.ServiceProviderDetail, *errors.UserError){
+func (service ServiceHandler) GetService(ctx *gin.Context, email string) (*models.ServiceProviderDetail, *errors.UserError) {
 	res := &models.ServiceProviderDetail{}
-	prov , err := service.Provider.ProviderByEmail(email)
-	if err != nil{
+	prov, err := service.Provider.ProviderByEmail(email)
+	if err != nil {
 		custom := errors.ErrResourceNotFound
 		return nil, custom
 	}
-	
+
 	var g errgroup.Group
 	g.Go(func() error {
-		serv , err := service.Service.Service(prov.ServiceProviderId)
-		if err != nil{
+		serv, err := service.Service.Service(prov.ServiceProviderId)
+		if err != nil {
 			return err
 		}
 		res.CompanyName = serv.CompanyName
@@ -156,40 +156,64 @@ func(service ServiceHandler)GetService(ctx *gin.Context ,email string)(*models.S
 	})
 
 	g.Go(func() error {
-		add , err := service.Service.AddressByProviderId(prov.ServiceProviderId)
-		if err != nil{
+		add, err := service.Service.AddressByProviderId(prov.ServiceProviderId)
+		if err != nil {
 			return err
 		}
-	     res.AddressName = add.Name
-	     res.AddressCity = add.City
-		 return nil
+		res.AddressName = add.Name
+		res.AddressCity = add.City
+		return nil
 	})
 
-	if err := g.Wait(); err !=nil{
-		return nil , errors.ErrResourceNotFound
+	if err := g.Wait(); err != nil {
+		return nil, errors.ErrResourceNotFound
 	}
-	res.FullName = fmt.Sprintf("%s %s",prov.FirstName, prov.LastName)
+	res.FullName = fmt.Sprintf("%s %s", prov.FirstName, prov.LastName)
 	res.PhoneNumber = prov.PhoneNumber
 	res.Email = prov.Email
 
 	return res, nil
 }
 
-func(service ServiceHandler)UpdateAddress(ctx *gin.Context, serviceProviderId string, data models.ServiceAddressJson)*errors.UserError{
+func (service ServiceHandler) UpdateAddress(ctx *gin.Context, serviceProviderId string, data models.ServiceAddressJson) *errors.UserError {
 	//confirm if the service provider record exist
-	_ , err := service.Provider.Provider(serviceProviderId)
-	if err != nil{
+	_, err := service.Provider.Provider(serviceProviderId)
+	if err != nil {
 		custom := errors.ErrResourceNotFound
 		return custom
 	}
 	add := &models.ServiceAddress{
-		Name: data.Name,
-		City: data.City,
+		Name:    data.Name,
+		City:    data.City,
 		ZipCode: data.ZipCode,
 	}
-	if err := service.Service.UpdateAddress(serviceProviderId,add); err != nil{
+	if err := service.Service.UpdateAddress(serviceProviderId, add); err != nil {
 		custom := errors.ErrUpdatingUserResource
 		fmt.Println(custom)
+		return custom
+	}
+	return nil
+}
+
+func (service ServiceHandler) UpdateService(ctx *gin.Context, serviceProviderId string, data models.ServiceJson) *errors.UserError {
+	//check if the service is available
+	_, err := service.Service.Service(serviceProviderId)
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return custom
+	}
+
+	//update service provider services
+	resource := models.Services{
+		PhoneNumber:      data.PhoneNumber,
+		YearOfExperience: data.YearOfExperience,
+		Service:          data.Service,
+		CompanyName:      data.CompanyName,
+		Email:            data.Email,
+	}
+
+	if err = service.Service.Update(serviceProviderId, resource); err != nil {
+		custom := errors.ErrUpdatingUserResource
 		return custom
 	}
 	return nil
