@@ -10,18 +10,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ServiceServer struct{
+type ServiceServer struct {
 	service handlers.ServiceHandler
 }
 
-func NewServiceServer(serv handlers.ServiceHandler)ServiceServer{
+func NewServiceServer(serv handlers.ServiceHandler) ServiceServer {
 	return ServiceServer{
 		service: serv,
-
 	}
 }
 
-func(service ServiceServer)CreateService()gin.HandlerFunc{
+func (service ServiceServer) CreateService() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var jsonData models.ServiceJson
 		id := ctx.Query("id")
@@ -30,7 +29,7 @@ func(service ServiceServer)CreateService()gin.HandlerFunc{
 			errors.CustomError(pkg.CodeDataValidationError, err.Error())
 			return
 		}
-		handlerErr := service.service.CreateService(ctx, id,jsonData)
+		handlerErr := service.service.CreateService(ctx, id, jsonData)
 		if handlerErr != nil {
 			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
 			return
@@ -40,7 +39,25 @@ func(service ServiceServer)CreateService()gin.HandlerFunc{
 
 }
 
-func(service ServiceServer)GetServicesCategories()gin.HandlerFunc{
+func (service ServiceServer) UpdateService() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var data models.ServiceJson
+		id := ctx.Query("id")
+
+		if err := ctx.ShouldBindJSON(&data); err != nil {
+			errors.CustomError(pkg.CodeDataValidationError, err.Error())
+			return
+		}
+
+		if handlerErr := service.service.UpdateService(ctx, id, data); handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, nil, nil)
+	}
+}
+
+func (service ServiceServer) GetServicesCategories() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		data := service.service.GetServicesCategories(ctx)
 		pkg.JsonResponse(ctx, true, http.StatusOK, nil, data)
@@ -48,10 +65,10 @@ func(service ServiceServer)GetServicesCategories()gin.HandlerFunc{
 	}
 }
 
-func(service ServiceServer)GetServices()gin.HandlerFunc{
+func (service ServiceServer) GetServices() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		servic := ctx.Query("service")
-		data , handlerErr := service.service.GetServices(ctx, servic)
+		data, handlerErr := service.service.GetServices(ctx, servic)
 		if handlerErr != nil {
 			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
 			return
@@ -61,10 +78,10 @@ func(service ServiceServer)GetServices()gin.HandlerFunc{
 	}
 }
 
-func(service ServiceServer)GetService()gin.HandlerFunc{
+func (service ServiceServer) GetService() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		email := ctx.Query("email")
-		data , handlerErr := service.service.GetService(ctx, email)
+		data, handlerErr := service.service.GetService(ctx, email)
 		if handlerErr != nil {
 			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
 			return
@@ -73,7 +90,7 @@ func(service ServiceServer)GetService()gin.HandlerFunc{
 	}
 }
 
-func(service ServiceServer)UpdateAddress()gin.HandlerFunc{
+func (service ServiceServer) UpdateAddress() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		id := ctx.Query("id")
 		var data models.ServiceAddressJson
@@ -81,7 +98,7 @@ func(service ServiceServer)UpdateAddress()gin.HandlerFunc{
 			errors.CustomError(pkg.CodeDataValidationError, err.Error())
 			return
 		}
-		handlerErr := service.service.UpdateAddress(ctx, id,data)
+		handlerErr := service.service.UpdateAddress(ctx, id, data)
 		if handlerErr != nil {
 			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
 			return
