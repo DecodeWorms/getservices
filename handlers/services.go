@@ -108,6 +108,7 @@ func (service ServiceHandler) GetServices(ctx *gin.Context, serviceName string) 
 			if err != nil {
 				return err
 			}
+			res.Id = provid.ServiceProviderId
 			res.PhoneNumber = provid.PhoneNumber
 			res.FullName = fmt.Sprintf("%s %s", provid.FirstName, provid.LastName)
 			res.Email = provid.Email
@@ -119,6 +120,7 @@ func (service ServiceHandler) GetServices(ctx *gin.Context, serviceName string) 
 			if err != nil {
 				return err
 			}
+			res.YearOfExperience = serv.YearOfExperience
 			res.CompanyName = serv.CompanyName
 			res.CompanyPhoneNumber = serv.PhoneNumber
 			res.Service = serv.Service
@@ -135,9 +137,9 @@ func (service ServiceHandler) GetServices(ctx *gin.Context, serviceName string) 
 	return result, nil
 }
 
-func (service ServiceHandler) GetService(ctx *gin.Context, email string) (*models.ServiceProviderDetail, *errors.UserError) {
+func (service ServiceHandler) GetService(ctx *gin.Context, id string) (*models.ServiceProviderDetail, *errors.UserError) {
 	res := &models.ServiceProviderDetail{}
-	prov, err := service.Provider.ProviderByEmail(email)
+	prov, err := service.Provider.Provider(id)
 	if err != nil {
 		custom := errors.ErrResourceNotFound
 		return nil, custom
@@ -145,10 +147,11 @@ func (service ServiceHandler) GetService(ctx *gin.Context, email string) (*model
 
 	var g errgroup.Group
 	g.Go(func() error {
-		serv, err := service.Service.Service(prov.ServiceProviderId)
+		serv, err := service.Service.Service(id)
 		if err != nil {
 			return err
 		}
+		res.YearOfExperience = serv.YearOfExperience
 		res.CompanyName = serv.CompanyName
 		res.Service = serv.Service
 		res.CompanyPhoneNumber = serv.PhoneNumber
@@ -156,7 +159,7 @@ func (service ServiceHandler) GetService(ctx *gin.Context, email string) (*model
 	})
 
 	g.Go(func() error {
-		add, err := service.Service.AddressByProviderId(prov.ServiceProviderId)
+		add, err := service.Service.AddressByProviderId(id)
 		if err != nil {
 			return err
 		}
@@ -168,6 +171,7 @@ func (service ServiceHandler) GetService(ctx *gin.Context, email string) (*model
 	if err := g.Wait(); err != nil {
 		return nil, errors.ErrResourceNotFound
 	}
+	res.Id = prov.ServiceProviderId
 	res.FullName = fmt.Sprintf("%s %s", prov.FirstName, prov.LastName)
 	res.PhoneNumber = prov.PhoneNumber
 	res.Email = prov.Email

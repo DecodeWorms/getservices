@@ -56,11 +56,12 @@ func (client ClientServer) UserLogin() gin.HandlerFunc {
 func (client ClientServer) UpdateClient() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var data models.ClientJson
+		id := ctx.Query("id")
 		if err := ctx.ShouldBindJSON(&data); err != nil {
 			errors.CustomError(pkg.CodeDataValidationError, err.Error())
 			return
 		}
-		handlerErr := client.clienthandler.UpdateClient(ctx, data)
+		handlerErr := client.clienthandler.UpdateClient(ctx, id, data)
 		if handlerErr != nil {
 			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
 			return
@@ -68,6 +69,18 @@ func (client ClientServer) UpdateClient() gin.HandlerFunc {
 		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, nil)
 	}
 
+}
+
+func (client ClientServer) Clients() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		clients, handlerErr := client.clienthandler.Clients(ctx)
+		if handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, clients)
+
+	}
 }
 
 func (client ClientServer) DeactivateAccount() gin.HandlerFunc {

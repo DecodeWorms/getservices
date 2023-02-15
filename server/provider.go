@@ -70,3 +70,15 @@ func (provider ProviderServer) UpdatePassword() gin.HandlerFunc {
 		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, nil)
 	}
 }
+
+func (provider ProviderServer) ServiceProviders() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		providers, handlerErr := provider.provider.ServiceProviders(ctx)
+		if handlerErr != nil {
+			pkg.JsonResponse(ctx, false, handlerErr.Code, handlerErr, nil)
+			return
+		}
+		pkg.JsonResponse(ctx, true, http.StatusOK, handlerErr, providers)
+
+	}
+}
