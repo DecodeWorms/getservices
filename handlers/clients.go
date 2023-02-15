@@ -31,7 +31,7 @@ func NewClientHandler(clientService storage.ClientServices) ClientHandler {
 }
 
 func (client ClientHandler) SignUpClient(ctx *gin.Context, data models.ClientJson) *errors.UserError {
-	//check if cliet email already exist
+	//check if client email already exist
 	_, err := client.ClientService.ClientByEmail(data.Email)
 	if err == nil {
 		custom := errors.ErrEmailAlreadyExist
@@ -157,9 +157,9 @@ func (client ClientHandler) UserLogin(ctx *gin.Context, data models.ClientLoginJ
 	return result, nil
 }
 
-func (client ClientHandler) UpdateClient(ctx *gin.Context, data models.ClientJson) *errors.UserError {
-	//TODO : use user id store in the context as an arg instead of email
-	cli, err := client.ClientService.ClientByEmail(data.Email)
+func (client ClientHandler) UpdateClient(ctx *gin.Context, id string, data models.ClientJson) *errors.UserError {
+	//check if the email exist
+	_, err := client.ClientService.Client(id)
 	if err != nil {
 		custom := errors.ErrResourceNotFound
 		return custom
@@ -179,7 +179,7 @@ func (client ClientHandler) UpdateClient(ctx *gin.Context, data models.ClientJso
 		Email:       strings.ToLower(data.Email),
 		PhoneNumber: data.PhoneNumber,
 	}
-	err = client.ClientService.Update(cli.ClientId, resources)
+	err = client.ClientService.Update(id, resources)
 	if err != nil {
 		custom := errors.ErrUpdatingUserResource
 		return custom
@@ -191,7 +191,7 @@ func (client ClientHandler) UpdateClient(ctx *gin.Context, data models.ClientJso
 		ZipCode: data.Address.ZipCode,
 	}
 
-	if err := client.ClientService.UpdateAddress(cli.ClientId, addResources); err != nil {
+	if err := client.ClientService.UpdateAddress(id, addResources); err != nil {
 		custom := errors.ErrUpdatingUserResource
 		return custom
 	}
@@ -260,6 +260,16 @@ func (client ClientHandler) ActivateAccount(ctx *gin.Context, id string) *errors
 		return errors.ErrActivatingResource
 	}
 	return nil
+}
+
+func (client ClientHandler) Clients(ctx *gin.Context) ([]models.Client, *errors.UserError) {
+	//get all clients
+	cl, err := client.ClientService.Clients()
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return nil, custom
+	}
+	return cl, nil
 }
 
 func (client ClientHandler) UpdateClientPassword(ctx *gin.Context, email string, passwordData models.PasswordJson) *errors.UserError {

@@ -41,10 +41,12 @@ type ServiceAddressJson struct {
 }
 
 type ServiceProviderDetail struct {
+	Id                 string `json:"id"`
 	FullName           string `json:"full_name"`
 	PhoneNumber        string `json:"phone_number"`
 	Email              string `json:"email"`
 	CompanyName        string `json:"company_name"`
+	YearOfExperience   string `json:"year_of_exp"`
 	Service            string `json:"service"`
 	CompanyPhoneNumber string `json:"company_phone_number"`
 	AddressName        string `json:"address_name"`

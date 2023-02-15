@@ -72,12 +72,14 @@ func main() {
 	router.PUT("/client", clientServ.UpdateClient())
 	router.DELETE("/client", clientServ.DeactivateAccount())
 	router.PUT("/client/reactivate", clientServ.ActivateAccount())
-	router.PUT("client/update_password", clientServ.UpdateClientPassword())
+	router.PUT("/client/update_password", clientServ.UpdateClientPassword())
+	router.GET("/clients", clientServ.Clients())
 
 	//provider public api endpoints
 	router.POST("/provider", providerServer.SignUpProvider())
 	router.POST("/provider/login", providerServer.LoginProvider())
 	router.PUT("provider/update_password", providerServer.UpdatePassword())
+	router.GET("/providers", providerServer.ServiceProviders())
 
 	//service public api endpoints
 	router.GET("/service/categories", serviceServer.GetServicesCategories())

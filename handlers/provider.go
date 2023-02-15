@@ -45,12 +45,12 @@ func (providers ServiceProviderHandler) SignUpProvider(ctx *gin.Context, data mo
 		return errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
 	}
 
-		//parse password
-	if b := hashpassword.ParsePassword(data.Password); !b{
+	//parse password
+	if b := hashpassword.ParsePassword(data.Password); !b {
 		custom := errors.ErrPasswordStrength
 		return custom
 	}
-		//compare password and confirm password
+	//compare password and confirm password
 	result := hashpassword.ComparePasswordWithConfirmPassword(data.Password, data.ConfirmPassword)
 	if !result {
 		return errors.NewUserError(errors.StatusInternalServerError, "password and confirm password not match")
@@ -185,4 +185,13 @@ func (provider ServiceProviderHandler) UpdatePassword(ctx *gin.Context, email st
 		return custom
 	}
 	return nil
+}
+
+func (provider ServiceProviderHandler) ServiceProviders(ctx *gin.Context) ([]models.ServiceProvider, *errors.UserError) {
+	prov, err := provider.providers.Providers()
+	if err != nil {
+		custom := errors.ErrResourceNotFound
+		return nil, custom
+	}
+	return prov, nil
 }
