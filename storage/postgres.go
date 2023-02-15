@@ -16,11 +16,12 @@ type Conn struct {
 func NewConn(c config.Config) Conn {
 	log.Println("establishing database connection")
 
-	uri := fmt.Sprintf("host=%s dbname=%s port=%s", c.DatabaseHost, c.DatabaseName, c.DatabasePort)
+	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", c.DatabaseHost, c.DatabaseName, c.DatabasePort, c.DatabasePassword, c.DatabaseUserName)
 	panicHandler()
 	log.Println("Connecting...")
 	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
 	if err != nil {
+		fmt.Println(err)
 		panic(err)
 	}
 
