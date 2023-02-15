@@ -87,7 +87,7 @@ func main() {
 	router.PUT("/service/address", serviceServer.UpdateAddress())
 	router.PUT("/service", serviceServer.UpdateService())
 
-	if err := router.Run(":080"); err != nil {
+	if err := router.Run(":081"); err != nil {
 		log.Println("error processing http server req")
 	}
 
