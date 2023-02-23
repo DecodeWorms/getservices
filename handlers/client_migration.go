@@ -3,7 +3,8 @@ package handlers
 import (
 	"context"
 	"fmt"
-	"getservices/migrator"
+
+	"github.com/DecodeWorms/getservices/migrator"
 
 	"golang.org/x/sync/errgroup"
 )
@@ -72,8 +73,8 @@ func (cl ClientMigrationHandler) MigrateModels(ctx context.Context) error {
 		}
 		return nil
 	})
-	if err := g.Wait(); err != nil{
-		return  err
+	if err := g.Wait(); err != nil {
+		return err
 	}
 
 	return nil

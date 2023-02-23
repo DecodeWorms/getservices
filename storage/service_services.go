@@ -1,8 +1,9 @@
 package storage
 
 import (
-	"getservices/models"
 	"time"
+
+	"github.com/DecodeWorms/getservices/models"
 
 	"gorm.io/gorm"
 )

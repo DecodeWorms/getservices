@@ -1,8 +1,9 @@
 package pkg
 
 import (
-	"getservices/errors"
 	"net/http"
+
+	"github.com/DecodeWorms/getservices/errors"
 
 	"github.com/gin-gonic/gin"
 )

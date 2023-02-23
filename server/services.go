@@ -1,11 +1,12 @@
 package server
 
 import (
-	"getservices/errors"
-	"getservices/handlers"
-	"getservices/models"
-	"getservices/pkg"
 	"net/http"
+
+	"github.com/DecodeWorms/getservices/errors"
+	"github.com/DecodeWorms/getservices/handlers"
+	"github.com/DecodeWorms/getservices/models"
+	"github.com/DecodeWorms/getservices/pkg"
 
 	"github.com/gin-gonic/gin"
 )

@@ -2,8 +2,9 @@ package storage
 
 import (
 	"fmt"
-	"getservices/config"
 	"log"
+
+	"github.com/DecodeWorms/getservices/config"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

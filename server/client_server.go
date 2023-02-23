@@ -2,8 +2,9 @@ package server
 
 import (
 	"context"
-	handler "getservices/handlers"
 	"log"
+
+	handler "github.com/DecodeWorms/getservices/handlers"
 )
 
 type ClientMigrationServer struct {

@@ -1,8 +1,9 @@
 package vault
 
 import (
-	"getservices/config"
 	"os"
+
+	"github.com/DecodeWorms/getservices/config"
 
 	"github.com/joho/godotenv"
 )
