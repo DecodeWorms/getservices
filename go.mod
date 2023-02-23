@@ -1,4 +1,4 @@
-module getservices
+module github.com/DecodeWorms/getservices
 
 go 1.19
 

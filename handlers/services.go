@@ -2,11 +2,12 @@ package handlers
 
 import (
 	"fmt"
-	"getservices/errors"
-	"getservices/models"
-	"getservices/pkg"
-	"getservices/storage"
-	"getservices/validations"
+
+	"github.com/DecodeWorms/getservices/errors"
+	"github.com/DecodeWorms/getservices/models"
+	"github.com/DecodeWorms/getservices/pkg"
+	"github.com/DecodeWorms/getservices/storage"
+	"github.com/DecodeWorms/getservices/validations"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"

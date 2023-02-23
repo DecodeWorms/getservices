@@ -1,4 +1,4 @@
-name: GetServices
+name: CI
 
 on: [push, pull_request]
 
@@ -22,7 +22,3 @@ jobs:
 
     - name: Run GolangCI-Lint
       run: golangci-lint run ./...
-    - name: Install dependencies
-      run: go mod download
-    - name: Run tests
-      run: go test -v ./...

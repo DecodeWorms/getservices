@@ -2,7 +2,8 @@ package migrator
 
 import (
 	"context"
-	"getservices/models"
+
+	"github.com/DecodeWorms/getservices/models"
 
 	"gorm.io/gorm"
 )

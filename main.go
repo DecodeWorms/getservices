@@ -4,11 +4,11 @@ import (
 	"context"
 	"log"
 
-	handler "getservices/handlers"
-	"getservices/migrator"
-	"getservices/server"
-	"getservices/storage"
-	"getservices/vault"
+	handler "github.com/DecodeWorms/getservices/handlers"
+	"github.com/DecodeWorms/getservices/migrator"
+	"github.com/DecodeWorms/getservices/server"
+	"github.com/DecodeWorms/getservices/storage"
+	"github.com/DecodeWorms/getservices/vault"
 
 	"github.com/gin-gonic/gin"
 )

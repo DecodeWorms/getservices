@@ -2,13 +2,14 @@ package handlers
 
 import (
 	"fmt"
-	"getservices/errors"
-	"getservices/hashpassword"
-	"getservices/models"
-	"getservices/pkg"
-	"getservices/storage"
-	"getservices/validations"
 	"strings"
+
+	"github.com/DecodeWorms/getservices/errors"
+	"github.com/DecodeWorms/getservices/hashpassword"
+	"github.com/DecodeWorms/getservices/models"
+	"github.com/DecodeWorms/getservices/pkg"
+	"github.com/DecodeWorms/getservices/storage"
+	"github.com/DecodeWorms/getservices/validations"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
