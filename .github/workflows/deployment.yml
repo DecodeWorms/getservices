@@ -22,3 +22,5 @@ jobs:
 
     - name: Run GolangCI-Lint
       run: golangci-lint run ./...
+    - name: Install dependencies
+      run: go mod download

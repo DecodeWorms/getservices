@@ -72,6 +72,7 @@ func (client ClientServer) UpdateClient() gin.HandlerFunc {
 
 }
 
+// the clients
 func (client ClientServer) Clients() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		clients, handlerErr := client.clienthandler.Clients(ctx)
