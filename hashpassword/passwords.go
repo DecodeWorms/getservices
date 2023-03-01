@@ -23,9 +23,9 @@ var (
 )
 
 var (
-	bigLetters   = regexp.MustCompile(`^.*[A-Z].*$`)
-	smallLetters = regexp.MustCompile(`^.*[a-z].*$`)
-	numbers      = regexp.MustCompile(`^.*\d.*$`)
+	bigLetters     = regexp.MustCompile(`^.*[A-Z].*$`)
+	smallLetters   = regexp.MustCompile(`^.*[a-z].*$`)
+	numbers        = regexp.MustCompile(`^.*\d.*$`)
 	minPasswordLen = 8
 )
 
