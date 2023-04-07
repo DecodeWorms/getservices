@@ -11,8 +11,10 @@ import (
 	"github.com/DecodeWorms/getservices/storage"
 	"github.com/DecodeWorms/getservices/validations"
 
+	//"github.com/go-playground/validator"
+
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
+	validator "github.com/go-playground/validator/v10"
 	"golang.org/x/sync/errgroup"
 )
 
