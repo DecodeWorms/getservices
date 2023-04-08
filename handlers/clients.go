@@ -10,7 +10,8 @@ import (
 	"github.com/DecodeWorms/getservices/pkg"
 	"github.com/DecodeWorms/getservices/storage"
 	"github.com/DecodeWorms/getservices/validations"
-	"github.com/go-playground/validator/v10"
+	"github.com/go-playground/validator"
+	_ "github.com/go-playground/validator/v10"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/sync/errgroup"
