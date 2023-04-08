@@ -10,7 +10,6 @@ import (
 	"github.com/DecodeWorms/getservices/pkg"
 	"github.com/DecodeWorms/getservices/storage"
 	"github.com/DecodeWorms/getservices/validations"
-	"github.com/go-playground/validator"
 	_ "github.com/go-playground/validator/v10"
 
 	"github.com/gin-gonic/gin"
@@ -317,14 +316,14 @@ func (client ClientHandler) UpdateClientPassword(ctx *gin.Context, email string,
 func ValidatedData(v validations.Validate, data interface{}) []error {
 	errDetails := make([]error, 0)
 
-	err := v.Struct(data)
-	if err != nil {
-		for _, err := range err.(validator.ValidationErrors) {
-			e := errors.New(fmt.Sprintf("user_data object: a valid %v of type %v is required, but recieved '%v' ", strings.ToLower(err.Field()), err.Kind(), err.Value()))
-			errDetails = append(errDetails, e)
-		}
-		return errDetails
-	}
+	//err := v.Struct(data)
+	//if err != nil {
+	//for _, err := range err.(validator.ValidationErrors) {
+	//e := errors.New(fmt.Sprintf("user_data object: a valid %v of type %v is required, but recieved '%v' ", strings.ToLower(err.Field()), err.Kind(), err.Value()))
+	//errDetails = append(errDetails, e)
+	//}
+	//return errDetails
+	//}
 
 	return errDetails
 }
