@@ -40,8 +40,9 @@ func (providers ServiceProviderHandler) SignUpProvider(ctx *gin.Context, data mo
 	trimmedEmail := fmt.Sprint(strings.TrimSpace(data.Email))
 
 	//validate data from the json
-	v := validations.Validate{Validate: validations.NewVaLidate()}
-	valErr := ValidatedData(v, data)
+	//v := validations.Validate{Validate: validations.NewVaLidate()}
+	v := validations.NewVaLidate()
+	valErr := validations.ValidatedData(v, data)
 	if len(valErr) > 0 {
 		return errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
 	}
@@ -103,8 +104,9 @@ func (providers ServiceProviderHandler) SignUpProvider(ctx *gin.Context, data mo
 
 func (providers ServiceProviderHandler) LoginProvider(ctx *gin.Context, data models.ServiceProviderLoginJson) (*models.ServiceProviderLoginResponse, *errors.UserError) {
 	//validate login data from the json
-	v := validations.Validate{Validate: validations.NewVaLidate()}
-	valErr := ValidatedData(v, data)
+	//v := validations.Validate{Validate: validations.NewVaLidate()}
+	v := validations.NewVaLidate()
+	valErr := validations.ValidatedData(v, data)
 	if len(valErr) > 0 {
 		return nil, errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
 	}

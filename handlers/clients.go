@@ -10,9 +10,9 @@ import (
 	"github.com/DecodeWorms/getservices/pkg"
 	"github.com/DecodeWorms/getservices/storage"
 	"github.com/DecodeWorms/getservices/validations"
+	_ "github.com/go-playground/validator/v10"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -50,8 +50,9 @@ func (client ClientHandler) SignUpClient(ctx *gin.Context, data models.ClientJso
 	trimmedEmail := fmt.Sprint(strings.TrimSpace(data.Email))
 
 	//validate data from the json
-	v := validations.Validate{Validate: validations.NewVaLidate()}
-	valErr := ValidatedData(v, data)
+	//v := validations.Validate{Validate: validations.NewVaLidate()}
+	v := validations.NewVaLidate()
+	valErr := validations.ValidatedData(v, data)
 	if len(valErr) > 0 {
 		return errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
 	}
@@ -112,8 +113,9 @@ func (client ClientHandler) SignUpClient(ctx *gin.Context, data models.ClientJso
 
 func (client ClientHandler) UserLogin(ctx *gin.Context, data models.ClientLoginJson) (*models.ClientLoginResponse, *errors.UserError) {
 	//validate login data from the json
-	v := validations.Validate{Validate: validations.NewVaLidate()}
-	valErr := ValidatedData(v, data)
+	//v := validations.Validate{Validate: validations.NewVaLidate()}
+	v := validations.NewVaLidate()
+	valErr := validations.ValidatedData(v, data)
 	if len(valErr) > 0 {
 		return nil, errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
 	}
@@ -167,8 +169,9 @@ func (client ClientHandler) UpdateClient(ctx *gin.Context, id string, data model
 	}
 
 	//validate the json data
-	v := validations.Validate{Validate: validations.NewVaLidate()}
-	valErr := ValidatedData(v, data)
+	//v := validations.Validate{Validate: validations.NewVaLidate()}
+	v := validations.NewVaLidate()
+	valErr := validations.ValidatedData(v, data)
 	if len(valErr) > 0 {
 		return errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
 	}
@@ -311,19 +314,4 @@ func (client ClientHandler) UpdateClientPassword(ctx *gin.Context, email string,
 	}
 
 	return nil
-}
-
-func ValidatedData(v validations.Validate, data interface{}) []error {
-	errDetails := make([]error, 0)
-
-	err := v.Struct(data)
-	if err != nil {
-		for _, err := range err.(validator.ValidationErrors) {
-			e := errors.New(fmt.Sprintf("user_data object: a valid %v of type %v is required, but recieved '%v' ", strings.ToLower(err.Field()), err.Kind(), err.Value()))
-			errDetails = append(errDetails, e)
-		}
-		return errDetails
-	}
-
-	return errDetails
 }
