@@ -54,7 +54,8 @@ func (service ServiceHandler) CreateService(ctx *gin.Context, id string, data mo
 	}
 
 	//validate the JSON data
-	v := validations.Validate{Validate: validations.NewVaLidate()}
+	//v := validations.Validate{Validate: validations.NewVaLidate()}
+	v := validations.NewVaLidate()
 	valErr := validations.ValidatedData(v, data)
 	if len(valErr) > 0 {
 		return errors.NewUserError(errors.StatusBadRequest, valErr[0].Error())
