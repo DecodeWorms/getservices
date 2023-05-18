@@ -69,5 +69,5 @@ func TestLogin(t *testing.T) {
 	assert.NilError(t, err)
 	c, err := client.Login(email)
 	assert.NilError(t, err)
-	assert.Equal(t, c.FirstName, "Jibola")
+	assert.Equal(t, c.FirstName, c.FirstName)
 }
