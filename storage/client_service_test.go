@@ -25,12 +25,16 @@ func TestCreate(t *testing.T) {
 	cl := Conn{
 		Client: db,
 	}
+	if err = cl.Client.AutoMigrate(&models.Client{}); err != nil {
+		panic(err)
+	}
 
 	client := NewClientAccount(cl.Client)
 
 	data := models.Client{
 		FirstName: "John",
 		LastName:  "Doe",
+		Email:     "John@mail.com",
 	}
 	err = client.Create(data)
 	assert.NilError(t, err)
@@ -52,7 +56,7 @@ func TestLogin(t *testing.T) {
 	}
 
 	client := NewClientAccount(cl.Client)
-	email := "john@mail.com"
+	email := "John@mail.com"
 	data := models.Client{
 		FirstName: "John",
 		LastName:  "Doe",
