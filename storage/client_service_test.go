@@ -12,7 +12,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
-	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", "localhost", "services", "5432", "", "abdulhameed")
+	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", "localhost", "services", "5432", "", "runner")
 	log.Println("Connecting...")
 	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
 	if err != nil {
@@ -37,7 +37,7 @@ func TestCreate(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
-	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", "localhost", "services", "5432", "", "abdulhameed")
+	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", "localhost", "services", "5432", "", "runner")
 	log.Println("Connecting...")
 	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
 	if err != nil {
