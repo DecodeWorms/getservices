@@ -12,6 +12,7 @@ import (
 )
 
 func TestCreate(t *testing.T) {
+	//connect to the virtual PostgreSql on github action
 	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", "localhost", "services", "5432", "password", "runner")
 	log.Println("Connecting...")
 	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
@@ -25,6 +26,8 @@ func TestCreate(t *testing.T) {
 	cl := Conn{
 		Client: db,
 	}
+
+	//create the table client for github action
 	if err = cl.Client.AutoMigrate(&models.Client{}); err != nil {
 		panic(err)
 	}
@@ -66,5 +69,5 @@ func TestLogin(t *testing.T) {
 	assert.NilError(t, err)
 	c, err := client.Login(email)
 	assert.NilError(t, err)
-	assert.Equal(t, c.FirstName, data.FirstName)
+	assert.Equal(t, c.FirstName, "Jibola")
 }
