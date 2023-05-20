@@ -71,3 +71,23 @@ func TestLogin(t *testing.T) {
 	assert.NilError(t, err)
 	assert.Equal(t, c.FirstName, c.FirstName)
 }
+func TestClients(t *testing.T) {
+	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", "localhost", "services", "5432", "password", "runner")
+	log.Println("Connecting...")
+	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
+	if err != nil {
+		fmt.Println(err)
+		panic(err)
+	}
+
+	log.Println("Connection established ..")
+
+	cl := Conn{
+		Client: db,
+	}
+
+	client := NewClientAccount(cl.Client)
+	_, err = client.Clients()
+	assert.NilError(t, err)
+
+}
