@@ -182,7 +182,7 @@ func TestUpdate(t *testing.T) {
 }
 
 func TestDeactivateAccount(t *testing.T) {
-	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", "localhost", "services", "5432", "password", "abdulhmeed")
+	uri := fmt.Sprintf("host=%s dbname=%s port=%s password=%s user=%s", "localhost", "services", "5432", "password", user)
 	log.Println("Connecting...")
 	db, err := gorm.Open(postgres.Open(uri), &gorm.Config{})
 	if err != nil {
